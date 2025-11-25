@@ -16,6 +16,43 @@ squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
+#Classes
+
+class Player:
+    def __init__(self, x, y, img, l, h, score, lives):
+        self.x = x
+        self.y = y
+        self.img = pygame.transform.scale(img, (l, h))
+        self.l = l
+        self.h = h
+        self.score = score
+        self.lives = lives
+    
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        
+class Invader:
+    def __init__(self, x, y, img, l, h, health, bullet_type):
+        self.x = x
+        self.y = y
+        self.img = pygame.transform.scale(img, (l, h))
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.l = l
+        self.h = h
+        self.direction = -1  
+        self.health = health
+        self.bullet_type = bullet_type
+        
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        
+class Bullet:
+    def __init__(self):
+        
+        
+        
+        
+
 #--Main Game variables
 
 FPS = 60
