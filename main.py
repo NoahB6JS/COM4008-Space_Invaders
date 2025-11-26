@@ -82,6 +82,7 @@ class Game:
         self.invader_startcol = 100
         self.invader_endcol = 400 
         
+    #Draw invaders function   
     def draw_invaders(self):
         self.invaders.clear()
         START_X = 100
@@ -100,6 +101,24 @@ class Game:
                 bullet_type = "easy"
             
                 self.invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
+                
+    def start_screen(self):
+        font = pygame.font.Font(None, 48)
+        text = font.render("Press SPACE to start", True, (255,255,255))
+        
+        running = True
+        
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            screen.blit(bg_img, (0,0))
+            screen.blit(text, (100,200))
+            pygame.display.flip()
+            
             
         
     
@@ -111,14 +130,6 @@ clock = pygame.time.Clock()
 SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-
-
-
-#Invader starting positions in matrix
-
-
-#Draw invaders function
-
         
             
 #resetting game data to restart
@@ -127,7 +138,9 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 #--Contains the main game loop
 
 game = Game()
+game.start_screen()
 game.draw_invaders()
+
 
 running = True
 while running:
