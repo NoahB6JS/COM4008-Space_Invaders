@@ -71,8 +71,38 @@ class EnemyBullet:
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
+        
+class Game:
+    def __init__(self):
+        self.level = 1
+        self.score = 0
+        self.invaders = []
+        self.invader_startrow = 10
+        self.invader_endrow = 300
+        self.invader_startcol = 100
+        self.invader_endcol = 400 
+        
+    def draw_invaders(self):
+        self.invaders.clear()
+        START_X = 100
+        SPACING_X = 45
+        START_Y = 30
+        SPACING_Y = 35
+        ROWS = 5
+        COLS = 8
     
-
+        for r in range(ROWS):
+            for c in range(COLS):
+                x = START_X + c * SPACING_X
+                y = START_Y + r * SPACING_Y
+            
+                health = 1
+                bullet_type = "easy"
+            
+                self.invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
+            
+        
+    
 #--Main Game variables
 
 FPS = 60
@@ -82,41 +112,22 @@ SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-score = 0
-level = 0
+
 
 #Invader starting positions in matrix
 
-invaders = []
-invader_startrow = 10
-invader_endrow = 300
-invader_startcol = 100
-invader_endcol = 400 
 
 #Draw invaders function
 
-def draw_invaders():
-    START_X = 100
-    SPACING_X = 45
-    START_Y = 30
-    SPACING_Y = 35
-    ROWS = 5
-    COLS = 8
-    
-    for r in range(ROWS):
-        for c in range(COLS):
-            x = START_X + c * SPACING_X
-            y = START_Y + r * SPACING_Y
+        
             
-            health = 1
-            bullet_type = "easy"
-            
-            invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
-            
-draw_invaders()          
-            
+#resetting game data to restart
+
 
 #--Contains the main game loop
+
+game = Game()
+game.draw_invaders()
 
 running = True
 while running:
@@ -126,25 +137,23 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-            
-            
-            
+                
     #background load
     screen.blit(bg_img, (0,0))
             
     #display invaders on screen
-    for inv in invaders:
+    for inv in game.invaders:
         screen.blit(inv.img, (inv.x, inv.y))
         inv.update()
         
     #Invader movement
-    for inv in invaders:
+    for inv in game.invaders:
         inv.x += inv.speed * inv.direction
         inv.update()   
         
-    for inv in invaders:
+    for inv in game.invaders:
         if inv.x <= 0 or inv.x + inv.l >= SCREEN_WIDTH:
-            for i in invaders:
+            for i in game.invaders:
                 i.direction *= -1
                 i.y += 10
                 
