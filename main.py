@@ -142,6 +142,16 @@ while running:
         inv.x += inv.speed * inv.direction
         inv.update()   
         
+    for inv in invaders:
+        if inv.x <= 0 or inv.x + inv.l >= SCREEN_WIDTH:
+            for i in invaders:
+                i.direction *= -1
+                i.y += 10
+                if i.y +i.h >= player.y:
+                    game_over()
+                    
+            break
+        
     #Runs screen           
     pygame.display.flip()
     clock.tick(FPS)
