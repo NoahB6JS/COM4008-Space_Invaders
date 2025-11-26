@@ -128,11 +128,19 @@ while running:
             sys.exit()
             
             
+            
+    #background load
     screen.blit(bg_img, (0,0))
             
+    #display invaders on screen
     for inv in invaders:
         screen.blit(inv.img, (inv.x, inv.y))
         inv.update()
+        
+    #Invader movement
+    for inv in invaders:
+        inv.x += inv.speed * inv.direction
+        inv.update()   
         
     #Runs screen           
     pygame.display.flip()
