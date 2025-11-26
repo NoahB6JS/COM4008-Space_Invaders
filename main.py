@@ -16,7 +16,6 @@ squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
-
 #----Classes
 class Player:
     def __init__(self, x, y, img, l, h, score, lives):
@@ -47,6 +46,8 @@ class Invader:
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         
+    
+        
 class Bullet:
     def __init__(self, x, y, w, h, s):
         self.x = x
@@ -71,6 +72,8 @@ class EnemyBullet:
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
+   
+
         
 class Game:
     def __init__(self):
@@ -101,13 +104,13 @@ class Game:
                 bullet_type = "easy"
             
                 self.invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
-                
+    
+    #Start screen           
     def start_screen(self):
         font = pygame.font.Font(None, 48)
-        text = font.render("Press SPACE to start", True, (255,255,255))
+        start_text = font.render("Press SPACE to start", True, (255,255,255))
         
         running = True
-        
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -116,31 +119,44 @@ class Game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
             screen.blit(bg_img, (0,0))
-            screen.blit(text, (100,200))
+            screen.blit(start_text, (100,200))
             pygame.display.flip()
             
-            
+    def game_over_screen():
+        font = pygame.font.Font(None, 48)
+        game_over_text= font.render("GAME OVER", True, (255,255,255))
+        game_over_text2 = font.render("press SPACE to restart", True, (255,255,255))
         
-    
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            screen.blit(bg_img, (0,0))
+            screen.blit(game_over_text, (100,200))
+            screen.blit(game_over_text2, (100,300))
+            pygame.display.flip()
+        
+        
+            
+
 #--Main Game variables
 
 FPS = 60
 clock = pygame.time.Clock()
-
 SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
         
-            
-#resetting game data to restart
-
 
 #--Contains the main game loop
 
 game = Game()
 game.start_screen()
 game.draw_invaders()
-
 
 running = True
 while running:
@@ -169,8 +185,7 @@ while running:
             for i in game.invaders:
                 i.direction *= -1
                 i.y += 10
-                
-                    
+                             
             break
         
     #Runs screen           
