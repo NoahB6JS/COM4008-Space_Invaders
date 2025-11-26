@@ -97,9 +97,9 @@ invader_endcol = 400
 
 def draw_invaders():
     START_X = 100
-    SPACING_X = 20
+    SPACING_X = 45
     START_Y = 30
-    SPACING_Y = 25
+    SPACING_Y = 35
     ROWS = 5
     COLS = 8
     
@@ -111,7 +111,7 @@ def draw_invaders():
             health = 1
             bullet_type = "easy"
             
-            invaders.append(Invader(x,y,defender_img,30,30,health,bullet_type))
+            invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
             
 draw_invaders()          
             
@@ -147,8 +147,7 @@ while running:
             for i in invaders:
                 i.direction *= -1
                 i.y += 10
-                if i.y +i.h >= player.y:
-                    game_over()
+                
                     
             break
         
