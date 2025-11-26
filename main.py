@@ -122,7 +122,7 @@ class Game:
             screen.blit(start_text, (100,200))
             pygame.display.flip()
             
-    def game_over_screen():
+    def game_over_screen(self):
         font = pygame.font.Font(None, 48)
         game_over_text= font.render("GAME OVER", True, (255,255,255))
         game_over_text2 = font.render("press SPACE to restart", True, (255,255,255))
@@ -136,13 +136,31 @@ class Game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
             screen.blit(bg_img, (0,0))
-            screen.blit(game_over_text, (100,200))
-            screen.blit(game_over_text2, (100,300))
+            screen.blit(game_over_text, (150,200))
+            screen.blit(game_over_text2, (85,300))
+            pygame.display.flip()
+            
+    def next_level(self):
+        font = pygame.font.Font(None, 48)
+        game_over_text= font.render(f"Level: {self.level} complete", True, (255,255,255))
+        game_over_text2 = font.render("press SPACE to continue", True, (255,255,255))
+        
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            screen.blit(bg_img, (0,0))
+            screen.blit(game_over_text, (150,200))
+            screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
         
         
-            
-
+        
+        
 #--Main Game variables
 
 FPS = 60
@@ -155,6 +173,7 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 #--Contains the main game loop
 
 game = Game()
+game.next_level()
 game.start_screen()
 game.draw_invaders()
 
