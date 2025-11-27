@@ -58,14 +58,9 @@ class Bullet:
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
-class EnemyBullet:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.w = 4
-        self.h = 10
-        self.speed = 5
-        self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
+class EnemyBullet(Bullet):
+    def __init__(self, x, y, speed):
+        super().__init__(x, y, 4, 10, speed)
 
     def update(self):
         self.y += self.speed
@@ -82,6 +77,7 @@ class Game:
         self.invader_startcol = 100
         self.invader_endcol = 400 
         self.enemy_bullets = []
+        self.enemy_bullet_speed = 5
         
     #Draw invaders function   
     def draw_invaders(self):
@@ -161,8 +157,11 @@ class Game:
 
     def invaders_shoot(self):
         for inv in self.invaders:
-            if random.random() < 0.002:
-                self.enemy_bullets.append(EnemyBullet(inv.x + inv.l//2, inv.y + inv.h))
+            if random.random() < 0.002:  
+                self.enemy_bullets.append(
+                    EnemyBullet(inv.x + inv.l//2, inv.y + inv.h, self.enemy_bullet_speed)
+            )
+
 
         
         
@@ -180,12 +179,13 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 #--Contains the main game loop
 
 game = Game()
-
 game.start_screen()
 game.draw_invaders()
 
 running = True
 while running:
+
+    game.invaders_shoot()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -213,6 +213,13 @@ while running:
                 i.y += 10
                              
             break
+    
+    for bullet in game.enemy_bullets[:]:
+        bullet.update()
+        pygame.draw.rect(screen, (0, 255, 0), bullet.rect) 
+
+        if bullet.y > SCREEN_HEIGHT:
+            game.enemy_bullets.remove(bullet)
         
     #Runs screen           
     pygame.display.flip()
