@@ -44,9 +44,7 @@ class Invader:
         self.bullet_type = bullet_type
         
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-        
-    
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
         
 class Bullet:
     def __init__(self, x, y, w, h, s):
@@ -72,7 +70,6 @@ class EnemyBullet:
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
-   
 
         
 class Game:
@@ -84,6 +81,7 @@ class Game:
         self.invader_endrow = 300
         self.invader_startcol = 100
         self.invader_endcol = 400 
+        self.enemy_bullets = []
         
     #Draw invaders function   
     def draw_invaders(self):
@@ -108,7 +106,9 @@ class Game:
     #Start screen           
     def start_screen(self):
         font = pygame.font.Font(None, 48)
+        text = font.render("Space Invaders", True, (255,255,255))
         start_text = font.render("Press SPACE to start", True, (255,255,255))
+
         
         running = True
         while running:
@@ -120,6 +120,7 @@ class Game:
                     running = False
             screen.blit(bg_img, (0,0))
             screen.blit(start_text, (100,200))
+            screen.blit(text, (120,100))  
             pygame.display.flip()
             
     def game_over_screen(self):
@@ -157,6 +158,12 @@ class Game:
             screen.blit(game_over_text, (150,200))
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
+
+    def invaders_shoot(self):
+        for inv in self.invaders:
+            if random.random() < 0.002:
+                self.enemy_bullets.append(EnemyBullet(inv.x + inv.l//2, inv.y + inv.h))
+
         
         
         
@@ -173,7 +180,7 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 #--Contains the main game loop
 
 game = Game()
-game.next_level()
+
 game.start_screen()
 game.draw_invaders()
 
