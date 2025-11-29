@@ -17,13 +17,23 @@ ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
 #----Classes
-class Player:
-    def __init__(self, x, y, img, l, h, score, lives):
+
+class Actor:
+    def __init__(self, x, y, img, l, h, speed, direction):
         self.x = x
         self.y = y
         self.img = pygame.transform.scale(img, (l, h))
         self.l = l
         self.h = h
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.speed = speed
+        self.direction = direction
+
+        
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+class Defender(Actor):
+    def __init__(self,score, lives):
         self.score = score
         self.lives = lives
     
@@ -31,41 +41,22 @@ class Player:
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         
 class Invader:
-    def __init__(self, x, y, img, l, h, health, bullet_type):
-        self.x = x
-        self.y = y
-        self.img = pygame.transform.scale(img, (l, h))
-        self.l = l
-        self.h = h
-        self.health = health
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-        self.speed = 0.75
-        self.direction = -1  
+    def __init__(self,health, bullet_type):
+        
+        self.health = health 
         self.bullet_type = bullet_type
         
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
         
-class Bullet:
+class Bullet(Actor):
     def __init__(self, x, y, w, h, s):
-        self.x = x
-        self.y = y
-        self.speed = s
+        
         self.width = w
         self.height = h
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        
-    def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        
-class EnemyBullet(Bullet):
-    def __init__(self, x, y, speed):
-        super().__init__(x, y, 4, 10, speed)
 
     def update(self):
-        self.y += self.speed
-        self.rect.topleft = (self.x, self.y)
-
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
 class Game:
     def __init__(self):
