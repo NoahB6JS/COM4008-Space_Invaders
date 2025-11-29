@@ -44,23 +44,30 @@ class Defender(Actor):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         
 class Invader(Actor):
-    def __init__(self,health, bullet_type,point_value, invader_type):
+    def __init__(self, x, y, img, l, h, health, bullet_type, point_value):
+        super().__init__(x, y, img, l, h, speed=1, direction=1)
         self.point_value = point_value
-        self.invader_type = invader_type
         self.health = health 
         self.bullet_type = bullet_type
+
         
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
         
-class Bullet(Actor):
-    def __init__(self, w, h,):
-        
+class Bullet:
+    def __init__(self, x, y, w, h, speed, owner):
+        self.x = x
+        self.y = y
         self.width = w
         self.height = h
+        self.speed = speed
+        self.owner = owner
+        self.rect = pygame.Rect(self.x, self.y, w, h)
 
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.y += self.speed
+        self.rect.topleft = (self.x, self.y)
+
         
 class Game:
     def __init__(self):
@@ -89,10 +96,16 @@ class Game:
                 x = START_X + c * SPACING_X
                 y = START_Y + r * SPACING_Y
             
+                invader_img = alien_img
                 health = 1
-                bullet_type = "easy"
+                bullet_type="easy"
+                point_value=10
             
-                self.invaders.append(Invader(x,y,defender_img,40,40,health,bullet_type))
+                self.invaders.append(Invader(x, y,invader_img,40, 40,health,bullet_type,point_value))
+
+    
+
+
     
     #Start screen           
     def start_screen(self):
@@ -154,8 +167,9 @@ class Game:
         for inv in self.invaders:
             if random.random() < 0.002:  
                 self.enemy_bullets.append(
-                    EnemyBullet(inv.x + inv.l//2, inv.y + inv.h, self.enemy_bullet_speed)
-            )
+    Bullet(inv.x + inv.l//2, inv.y + inv.h, 4, 10, speed=5, owner="enemy")
+)
+
 
 
         
