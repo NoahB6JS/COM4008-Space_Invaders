@@ -17,7 +17,6 @@ ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
 #----Classes
-
 class Actor:
     def __init__(self, x, y, img, l, h, speed, direction):
         self.x = x
@@ -32,17 +31,22 @@ class Actor:
         
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+
 class Defender(Actor):
-    def __init__(self,score, lives):
-        self.score = score
-        self.lives = lives
-    
+    def __init__(self, x, y, img, l, h, cooldown):
+        super().__init__(x, y, img, l, h, speed=0, direction=0)
+        self.score = 0
+        self.lives = 3
+        self.bullet_type = "normal"
+        self.cooldown = cooldown
+        
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         
-class Invader:
-    def __init__(self,health, bullet_type):
-        
+class Invader(Actor):
+    def __init__(self,health, bullet_type,point_value, invader_type):
+        self.point_value = point_value
+        self.invader_type = invader_type
         self.health = health 
         self.bullet_type = bullet_type
         
@@ -50,7 +54,7 @@ class Invader:
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
         
 class Bullet(Actor):
-    def __init__(self, x, y, w, h, s):
+    def __init__(self, w, h,):
         
         self.width = w
         self.height = h
@@ -70,7 +74,7 @@ class Game:
         self.enemy_bullets = []
         self.enemy_bullet_speed = 5
         
-    #Draw invaders function   
+      
     def draw_invaders(self):
         self.invaders.clear()
         START_X = 100
