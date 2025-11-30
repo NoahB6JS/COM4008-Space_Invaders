@@ -42,11 +42,12 @@ class Defender(Actor):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         
 class Invader(Actor):
-    def __init__(self, x, y, img, l, h, health, bullet_type, point_value):
+    def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1)
         self.point_value = point_value
         self.health = health 
-        self.bullet_type = bullet_type
+        self.bullet_speed = bullet_speed
+        self.fire_rate = fire_rate
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
@@ -99,13 +100,15 @@ class Game:
                 y = START_Y + r * SPACING_Y
 
                 inv = Invader(
-                    x, y,
-                    t["img"],
-                    40, 40,
-                    t["health"],
-                    t["bullet_type"],
-                    t["points"]
-                )
+    x, y,
+    t["img"],
+    40, 40,
+    t["health"],
+    t["bullet_speed"],
+    t["points"],       # point_value belongs here
+    t["fire_rate"]     # fire_rate is LAST
+)
+
 
                 inv.speed = config["speed"]
                 self.invaders.append(inv)
@@ -116,7 +119,6 @@ class Game:
         text = font.render("Space Invaders", True, (255,255,255))
         start_text = font.render("Press SPACE to start", True, (255,255,255))
 
-        
         running = True
         while running:
             for event in pygame.event.get():
@@ -173,12 +175,20 @@ class Game:
         screen.blit(level_text, (SCREEN_WIDTH - level_text.get_width() - 10, 10))
 
     def invaders_shoot(self):
-        config = get_level_config(self.level)
         for inv in self.invaders:
-            if random.random() < config["enemy_fire_rate"]:
+        # Harder invaders shoot more often
+            if random.random() < inv.fire_rate:
                 self.enemy_bullets.append(
-                    Bullet(inv.x + inv.l//2, inv.y + inv.h, 4, 10, speed=5, owner="enemy")
+                    Bullet(
+                        inv.x + inv.l//2,
+                        inv.y + inv.h,
+                        4, 10,
+                        speed=inv.bullet_speed,
+                        owner="enemy"
+                )
             )
+
+            
 
 #invader tpes dictionary
 
@@ -186,19 +196,22 @@ INVADER_TYPES = {
     "alien": {
         "img": alien_img,
         "health": 1,
-        "bullet_type": "easy",
+        "bullet_speed": 3,
+        "fire_rate": 0.002,
         "points": 10
     },
     "squid": {
         "img": squid_img,
         "health": 2,
-        "bullet_type": "medium",
+        "bullet_speed": 4,
+        "fire_rate": 0.004,
         "points": 20
     },
     "invader": {
         "img": invader_img,
         "health": 3,
-        "bullet_type": "hard",
+        "bullet_speed": 5,
+        "fire_rate": 0.006,
         "points": 50
     }
 }
@@ -231,13 +244,11 @@ SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-
 #--Contains the main game loop
 
 game = Game()
 game.start_screen()
 game.draw_invaders()
-
 
 
 running = True
