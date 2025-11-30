@@ -10,7 +10,7 @@ pygame.mixer.init()
 #--Image Files loaded in and set to variables
 
 player_img = pygame.image.load("Media/player.png")
-defender_img = pygame.image.load("Media/defender.png")
+invader_img = pygame.image.load("Media/invader.png")
 alien_img = pygame.image.load("Media/alien.png")
 squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
@@ -28,7 +28,6 @@ class Actor:
         self.speed = speed
         self.direction = direction
 
-        
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
 
@@ -67,8 +66,7 @@ class Bullet:
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
-
-        
+ 
 class Game:
     def __init__(self):
         self.level = 1
@@ -171,6 +169,28 @@ class Game:
 )
 
 
+#invader tpes dictionary
+
+INVADER_TYPES = {
+    "alien": {
+        "img": alien_img,
+        "health": 1,
+        "bullet_type": "easy",
+        "points": 10
+    },
+    "squid": {
+        "img": squid_img,
+        "health": 2,
+        "bullet_type": "medium",
+        "points": 20
+    },
+    "invader": {
+        "img": invader_img,
+        "health": 3,
+        "bullet_type": "hard",
+        "points": 50
+    }
+}
 
         
         
@@ -183,7 +203,8 @@ clock = pygame.time.Clock()
 SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-        
+
+     
 
 #--Contains the main game loop
 
