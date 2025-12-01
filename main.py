@@ -30,6 +30,7 @@ class Actor:
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
         super().__init__(x, y, img, l, h, speed=0, direction=0)
@@ -39,8 +40,8 @@ class Defender(Actor):
         self.cooldown = cooldown
         
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-        
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)  
+           
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1)
@@ -50,8 +51,8 @@ class Invader(Actor):
         self.fire_rate = fire_rate
 
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) 
-        
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)         
+
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
         self.x = x
@@ -102,8 +103,7 @@ class Game:
                 inv = Invader(x, y,t["img"],40, 40,t["health"],t["bullet_speed"],t["points"],t["fire_rate"])
                 inv.speed = config["speed"]
                 self.invaders.append(inv)
-
-    #Start screen           
+          
     def start_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Space Invaders", True, (255,255,255))
@@ -140,7 +140,7 @@ class Game:
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
             
-    def next_level(self):
+    def next_level_screen(self):
         font = pygame.font.Font(None, 48)
         game_over_text= font.render(f"Level: {self.level} complete", True, (255,255,255))
         game_over_text2 = font.render("press SPACE to continue", True, (255,255,255))
@@ -158,6 +158,7 @@ class Game:
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
 
+
     def score_level_display(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
@@ -166,7 +167,7 @@ class Game:
 
     def invaders_shoot(self):
         for inv in self.invaders:
-        # Harder invaders shoot more often
+        
             if random.random() < inv.fire_rate:
                 self.enemy_bullets.append(
                     Bullet(
@@ -213,8 +214,8 @@ def get_level_config(level):
 
 def pick_invader_type(level):
 
-    prob_invader = min(0.05 + level * 0.01, 0.4)     
-    prob_squid = min(0.20 + level * 0.02, 0.7)   
+    prob_invader = min(0.4 + level * 0.4, 0.8)     #Change the invader spawinng chances
+    prob_squid = min(0.08 + level * 0.08, 0.4)   
     r = random.random()
     if r < prob_invader:
         return "invader"
@@ -223,7 +224,7 @@ def pick_invader_type(level):
     else:
         return "alien" 
         
-#--Main Game variables
+
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -231,7 +232,6 @@ SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 500
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-#--Contains the main game loop
 
 game = Game()
 game.start_screen()
@@ -248,17 +248,15 @@ while running:
             pygame.quit()
             sys.exit()
                 
-    #background load
-    screen.blit(bg_img, (0,0))
 
+    screen.blit(bg_img, (0,0))
     game.score_level_display(screen)
             
-    #display invaders on screen
     for inv in game.invaders:
         screen.blit(inv.img, (inv.x, inv.y))
         inv.update()
         
-    #Invader movement
+    
     for inv in game.invaders:
         inv.x += inv.speed * inv.direction
         inv.update()   
@@ -277,8 +275,7 @@ while running:
 
         if bullet.y > SCREEN_HEIGHT:
             game.enemy_bullets.remove(bullet)
-        
-    #Runs screen           
+                 
     pygame.display.flip()
     clock.tick(FPS)
 
