@@ -69,7 +69,7 @@ class Bullet:
  
 class Game:
     def __init__(self):
-        self.level = 1
+        self.level = 6
         self.score = 0
         self.invaders = []
         self.invader_startrow = 10
@@ -184,34 +184,28 @@ class Game:
             )
                 
     def invader_movement(self):
+        hit_wall = False
 
-    # Draw invaders
         for inv in self.invaders:
             self.screen.blit(inv.img, (inv.x, inv.y))
             inv.update()
 
-    # 1. Predict if ANY invader will hit a wall on the next move
-        hit_wall = False
         for inv in self.invaders:
             next_x = inv.x + inv.speed * inv.direction
+
             if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH:
                 hit_wall = True
                 break
 
-    # 2. If ANY invader hits a wall, reverse direction for ALL
         if hit_wall:
             for inv in self.invaders:
                 inv.direction *= -1
                 inv.y += 10
 
-    # 3. Now safely move all invaders
         for inv in self.invaders:
             inv.x += inv.speed * inv.direction
             inv.update()
  
-        
-    
-
                 
 INVADER_TYPES = {
     "alien": {
@@ -239,7 +233,7 @@ INVADER_TYPES = {
 
 def get_level_config(level):
     config = {}
-    config["speed"] = 1 + (level * 0.15)
+    config["speed"] = 0.5  + (level * 0.00005)
     config["enemy_fire_rate"] = 0.001 + (level * 0.0003)
     config["rows"] = min(5 + level // 2, 10)   
     config["cols"] = min(8 + level // 3, 12)   
