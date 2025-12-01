@@ -31,20 +31,6 @@ class Actor:
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
              
-class Invader:
-    def __init__(self, x, y, img, l, h, health, bullet_type):
-        self.x = x
-        self.y = y
-        self.img = pygame.transform.scale(img, (l, h))
-        self.l = l
-        self.h = h
-        self.health = health
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-        self.speed = 0.75
-        self.direction = -1  
-        self.bullet_type = bullet_type
-        self.start_x = x
-        self.start_y = y
         
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
@@ -94,6 +80,11 @@ class Game:
         self.enemy_bullets = []
         self.enemy_bullet_speed = 5
         self.font = pygame.font.Font(None, 32)
+        self.FPS = 60
+        self.clock = pygame.time.Clock()
+        self.SCREEN_HEIGHT = 500
+        self.SCREEN_WIDTH = 500        
+        self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
         
     def draw_invaders(self):
 
@@ -131,9 +122,9 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
-            screen.blit(bg_img, (0,0))
-            screen.blit(start_text, (100,200))
-            screen.blit(text, (120,100))  
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(start_text, (100,200))
+            self.screen.blit(text, (120,100))  
             pygame.display.flip()
             
     def game_over_screen(self):
@@ -149,9 +140,9 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
-            screen.blit(bg_img, (0,0))
-            screen.blit(game_over_text, (150,200))
-            screen.blit(game_over_text2, (85,300))
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(game_over_text, (150,200))
+            self.screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
             
     def next_level_screen(self):
@@ -167,9 +158,9 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
-            screen.blit(bg_img, (0,0))
-            screen.blit(game_over_text, (150,200))
-            screen.blit(game_over_text2, (85,300))
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(game_over_text, (150,200))
+            self.screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
 
 
@@ -177,7 +168,7 @@ class Game:
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
-        screen.blit(level_text, (SCREEN_WIDTH - level_text.get_width() - 10, 10))
+        screen.blit(level_text, (self.SCREEN_WIDTH - level_text.get_width() - 10, 10))
 
     def invaders_shoot(self):
         for inv in self.invaders:
@@ -192,6 +183,22 @@ class Game:
                         owner="enemy"
                 )
             )
+                
+    def invader_movement(self):
+        for inv in self.invaders:
+            self.screen.blit(inv.img, (inv.x, inv.y))
+            inv.update()
+        
+        for inv in self.invaders:
+            inv.x += inv.speed * inv.direction
+            inv.update()   
+        
+        for inv in self.invaders:
+            if inv.x <= 0 or inv.x + inv.l >= self.SCREEN_WIDTH:
+                for i in self.invaders:
+                    i.direction *= -1
+                    i.y += 10              
+                break
                 
 INVADER_TYPES = {
     "alien": {
@@ -238,14 +245,7 @@ def pick_invader_type(level):
         return "alien" 
         
 
-
-FPS = 60
-clock = pygame.time.Clock()
-SCREEN_HEIGHT = 500
-SCREEN_WIDTH = 500
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-
-
+#Create game instance and start
 game = Game()
 game.start_screen()
 game.draw_invaders()
@@ -253,7 +253,6 @@ game.draw_invaders()
 
 running = True
 while running:
-    game.invaders_shoot()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -261,34 +260,19 @@ while running:
             pygame.quit()
             sys.exit()
                 
-
-    screen.blit(bg_img, (0,0))
-    game.score_level_display(screen)
-            
-    for inv in game.invaders:
-        screen.blit(inv.img, (inv.x, inv.y))
-        inv.update()
-        
-    
-    for inv in game.invaders:
-        inv.x += inv.speed * inv.direction
-        inv.update()   
-        
-    for inv in game.invaders:
-        if inv.x <= 0 or inv.x + inv.l >= SCREEN_WIDTH:
-            for i in game.invaders:
-                i.direction *= -1
-                i.y += 10
-                             
-            break
+    game.screen.blit(bg_img, (0,0))
+    game.score_level_display(game.screen)
+    game.invader_movement()
+    game.invaders_shoot()
+    game.score_level_display(game.screen)
     
     for bullet in game.enemy_bullets[:]:
         bullet.update()
-        pygame.draw.rect(screen, (0, 255, 0), bullet.rect) 
+        pygame.draw.rect(game.screen, (0, 255, 0), bullet.rect) 
 
-        if bullet.y > SCREEN_HEIGHT:
+        if bullet.y > game.SCREEN_HEIGHT:
             game.enemy_bullets.remove(bullet)
                  
     pygame.display.flip()
-    clock.tick(FPS)
+    game.clock.tick(game.FPS)
 
