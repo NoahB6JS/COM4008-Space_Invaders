@@ -63,7 +63,6 @@ class Bullet:
         self.speed = speed
         self.owner = owner
         self.rect = pygame.Rect(self.x, self.y, w, h)
-
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
@@ -191,14 +190,16 @@ class Game:
         
         for inv in self.invaders:
             inv.x += inv.speed * inv.direction
+
             inv.update()   
         
+        hit_wall = False
         for inv in self.invaders:
-            if inv.x <= 0 or inv.x + inv.l >= self.SCREEN_WIDTH:
-                for i in self.invaders:
-                    i.direction *= -1
-                    i.y += 10              
+            next_x = inv.x + inv.speed * inv.direction
+            if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH:
+                hit_wall = True
                 break
+
                 
 INVADER_TYPES = {
     "alien": {
