@@ -16,6 +16,28 @@ squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
+#Sound files path
+
+def check_sound_path(path):
+    try:
+        return pygame.mixer.Sound(path)
+    except Exception:
+        return None
+
+
+SHOOT_SOUND_PATH = check_sound_path("Media/sound/invaderkilled.wav")
+SOUNDTRACK_PATH = check_sound_path("Media/sound/soundtrack.wav")
+
+shoot_sound = check_sound_path(SHOOT_SOUND_PATH)
+soundtrack_sound = check_sound_path(SOUNDTRACK_PATH)
+
+try:
+    pygame.mixer.music.load("Media/sound/soundtrack.wav")
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+except Exception:
+    pass
+
 #----Classes
 class Actor:
     def __init__(self, x, y, img, l, h, speed, direction):
@@ -69,7 +91,7 @@ class Bullet:
  
 class Game:
     def __init__(self):
-        self.level = 6
+        self.level = 1
         self.score = 0
         self.invaders = []
         self.invader_startrow = 10
@@ -181,7 +203,9 @@ class Game:
                         speed=inv.bullet_speed,
                         owner="enemy"
                 )
+                
             )
+                shoot_sound.play()
                 
     def invader_movement(self):
         hit_wall = False
@@ -261,6 +285,7 @@ game.draw_invaders()
 running = True
 while running:
     
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -272,6 +297,8 @@ while running:
     game.invader_movement()
     game.invaders_shoot()
     game.score_level_display(game.screen)
+
+    
     
     for bullet in game.enemy_bullets[:]:
         bullet.update()
