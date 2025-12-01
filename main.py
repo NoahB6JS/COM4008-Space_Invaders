@@ -99,17 +99,7 @@ class Game:
                 x = START_X + c * SPACING_X
                 y = START_Y + r * SPACING_Y
 
-                inv = Invader(
-    x, y,
-    t["img"],
-    40, 40,
-    t["health"],
-    t["bullet_speed"],
-    t["points"],       # point_value belongs here
-    t["fire_rate"]     # fire_rate is LAST
-)
-
-
+                inv = Invader(x, y,t["img"],40, 40,t["health"],t["bullet_speed"],t["points"],t["fire_rate"])
                 inv.speed = config["speed"]
                 self.invaders.append(inv)
 
@@ -187,9 +177,6 @@ class Game:
                         owner="enemy"
                 )
             )
-
-            
-
 #invader tpes dictionary
 
 INVADER_TYPES = {
