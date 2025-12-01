@@ -30,6 +30,21 @@ class Actor:
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+             
+class Invader:
+    def __init__(self, x, y, img, l, h, health, bullet_type):
+        self.x = x
+        self.y = y
+        self.img = pygame.transform.scale(img, (l, h))
+        self.l = l
+        self.h = h
+        self.health = health
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.speed = 0.75
+        self.direction = -1  
+        self.bullet_type = bullet_type
+        self.start_x = x
+        self.start_y = y
         
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
@@ -99,8 +114,7 @@ class Game:
                 t = INVADER_TYPES[inv_type]
                 x = START_X + c * SPACING_X
                 y = START_Y + r * SPACING_Y
-
-                inv = Invader(x, y,t["img"],40, 40,t["health"],t["bullet_speed"],t["points"],t["fire_rate"])
+                inv = Invader(x,y,t["img"],40, 40,t["health"],t["bullet_speed"],t["points"],t["fire_rate"])
                 inv.speed = config["speed"]
                 self.invaders.append(inv)
           
@@ -178,8 +192,7 @@ class Game:
                         owner="enemy"
                 )
             )
-#invader tpes dictionary
-
+                
 INVADER_TYPES = {
     "alien": {
         "img": alien_img,
@@ -214,7 +227,7 @@ def get_level_config(level):
 
 def pick_invader_type(level):
 
-    prob_invader = min(0.4 + level * 0.4, 0.8)     #Change the invader spawinng chances
+    prob_invader = min(0.004 + level * 0.004, 0.008)     #Change the invader spawinng chances
     prob_squid = min(0.08 + level * 0.08, 0.4)   
     r = random.random()
     if r < prob_invader:
