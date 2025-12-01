@@ -42,11 +42,11 @@ class Invader:
         self.speed = 0.75
         self.direction = -1  
         self.bullet_type = bullet_type
+        self.start_x = x
+        self.start_y = y
         
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-        
-    
         
 class Bullet:
     def __init__(self, x, y, w, h, s):
@@ -140,7 +140,7 @@ class Game:
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
             
-    def next_level(self):
+    def next_level_screen(self):
         font = pygame.font.Font(None, 48)
         game_over_text= font.render(f"Level: {self.level} complete", True, (255,255,255))
         game_over_text2 = font.render("press SPACE to continue", True, (255,255,255))
@@ -157,10 +157,10 @@ class Game:
             screen.blit(game_over_text, (150,200))
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
+            
+    def reset_game(self):
         
-        
-        
-        
+         
 #--Main Game variables
 
 FPS = 60
@@ -173,7 +173,6 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 #--Contains the main game loop
 
 game = Game()
-game.next_level()
 game.start_screen()
 game.draw_invaders()
 
