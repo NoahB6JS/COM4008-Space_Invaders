@@ -227,7 +227,7 @@ def get_level_config(level):
 
 def pick_invader_type(level):
 
-    prob_invader = min(0.004 + level * 0.004, 0.008)     #Change the invader spawinng chances
+    prob_invader = min(0.4 + level * 0.4, 0.8)     #Change the invader spawinng chances
     prob_squid = min(0.08 + level * 0.08, 0.4)   
     r = random.random()
     if r < prob_invader:
