@@ -10,7 +10,7 @@ pygame.mixer.init()
 #Media checkerr
 check_files = ["Media/player.png", "Media/invader.png", "Media/alien.png",
                "Media/squid.png", "Media/ufo.png", "Media/bg.png",
-                "Media/sound/soundtrack.wav"]
+                "Media/sound/soundtrack.wav","Media/sound/laser.wav"]
 
 #EXCEPTION HANDLING FOR THE MEDIA FILE BEFORE GAME STARTS.
 
@@ -24,43 +24,32 @@ for file in check_files:
         print(f"ERROR LOADING MEDIA: {file}: {e}") #error message if file not found
         pygame.quite()
         sys.exit()
-
-
-        
+ 
 #---------------------------The game assets---------------------------
-pygame.init()
-pygame.mixer.init()
+
 player_img = pygame.image.load("Media/player.png")
 invader_img = pygame.image.load("Media/invader.png")
 alien_img = pygame.image.load("Media/alien.png")
 squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.png")
+soundtrack_sound = pygame.mixer.Sound("Media/sound/soundtrack.wav")
+shoot_sound = pygame.mixer.Sound("Media/sound/laser.wav")
+
+try: #Tries to tune background sound
+    pygame.mixer.music.load("Media/sound/soundtrack.wav")
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+except Exception:
+    pass
+
+#INVADER TYPES DICTIONARY
 
 INVADER_TYPES = {
     "alien": {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.002, "points": 10},
     "squid": {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.004, "points": 20},
     "invader": {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 30},
 }
-
-def check_sound_path(path):
-    try:
-        return pygame.mixer.Sound(path)
-    except Exception:
-        return None
-
-SHOOT_SOUND_PATH = check_sound_path("Media/sound/invaderkilled.wav")
-SOUNDTRACK_PATH = check_sound_path("Media/sound/soundtrack.wav")
-
-shoot_sound = check_sound_path(SHOOT_SOUND_PATH)
-soundtrack_sound = check_sound_path(SOUNDTRACK_PATH)
-
-try:
-    pygame.mixer.music.load("Media/sound/soundtrack.wav")
-    pygame.mixer.music.set_volume(0.3)
-    pygame.mixer.music.play(-1)
-except Exception:
-    pass
 
 #---------------------------my classes---------------------------
 class Actor:
@@ -242,7 +231,7 @@ class Game:
 
 #---------------------------The game loop---------------------------
 
-game = Game()
+game = Game() #create game instance
 game.start_screen()
 game.draw_invaders()
 
@@ -254,9 +243,9 @@ while running:
             pygame.quit()
             sys.exit()
 
-    game.draw()
-    game.invader_movement()
-    game.update_enemy_bullets()
+    game.draw() #draws the background and score + level
+    game.invader_movement() #moves invaders
+    game.update_enemy_bullets() #updates enemy bullets
 
     for inv in game.invaders:
         bullet = inv.chance_of_shot()
