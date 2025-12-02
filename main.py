@@ -67,14 +67,14 @@ class Actor:
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
-        super().__init__(x, y, img, l, h, speed=0, direction=0)
+        super().__init__(x, y, img, l, h, speed=0, direction=0) #inheriting the actor class attributes
         self.score = 0
         self.lives = 3
         self.bullet_type = "normal"
         self.cooldown = cooldown
 
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) # updates the users boundaries
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1)
@@ -84,7 +84,7 @@ class Invader(Actor):
         self.fire_rate = fire_rate
 
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) #inheriting the actor class attributes
 
     def move(self):
         self.x += self.speed * self.direction
