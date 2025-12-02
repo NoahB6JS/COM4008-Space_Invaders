@@ -6,8 +6,6 @@ import random
 
 pygame.init()
 pygame.mixer.init()
-
-
 player_img = pygame.image.load("Media/player.png")
 invader_img = pygame.image.load("Media/invader.png")
 alien_img = pygame.image.load("Media/alien.png")
@@ -53,7 +51,6 @@ class Actor:
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
         super().__init__(x, y, img, l, h, speed=0, direction=0)
@@ -64,7 +61,6 @@ class Defender(Actor):
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
-
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1)
@@ -80,11 +76,10 @@ class Invader(Actor):
         self.x += self.speed * self.direction
         self.update()
 
-    def maybe_shoot(self):
+    def chance_of_shot(self):
         if random.random() < self.fire_rate:
             return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
-
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
         self.x = x
@@ -140,16 +135,37 @@ class Game:
         START_Y = 40
         SPACING_Y = 35
 
-        for r in range(ROWS):
-            for c in range(COLS):
-                x = START_X + c * SPACING_X
-                y = START_Y + r * SPACING_Y
-                inv_type = self.pick_invader_type()
+        for row in range(ROWS):
+            for col in range(COLS):
+                x = START_X + col * SPACING_X
+                y = START_Y + row * SPACING_Y
+                
+                
+            
+                if self.level >= 3:
+                    if row < 1:
+                        inv_type = "invader"  
+                elif row < 3:
+                    inv_type = "squid"
+                else:
+                  inv_type = "alien"
+                
                 types = INVADER_TYPES[inv_type]
-                inv = Invader(x, y, types["img"], 40, 40, types["health"], types["bullet_speed"], types["points"], types["fire_rate"])
-                inv.speed = config["speed"]
+            
+                inv = Invader(
+                    x, y,
+                    types["img"],
+                    l=40, h=40,
+                    health=types["health"],
+                    bullet_speed=types["bullet_speed"],
+                    point_value=types["points"],
+                    fire_rate=types["fire_rate"]
+            )
+            
+                inv.speed = 1 + self.level * 0.01  
                 self.invaders.append(inv)
-
+            
+            
     # --- Game helpers ---
     def score_level_display(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
@@ -221,7 +237,7 @@ while running:
     game.update_enemy_bullets()
 
     for inv in game.invaders:
-        bullet = inv.maybe_shoot()
+        bullet = inv.chance_of_shot()
         if bullet:
             game.enemy_bullets.append(bullet)
             shoot_sound.play()
