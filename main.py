@@ -1,29 +1,325 @@
+import sys
 import pygame
-from Game import Game
+import random
 
 pygame.init()
 pygame.mixer.init()
 
-screen = pygame.display.set_mode((500, 500))
+#--Image Files loaded in and set to variables
 
-images = {
-    "player": pygame.image.load("Media/player.png"),
-    "invader": pygame.image.load("Media/invader.png"),
-    "alien": pygame.image.load("Media/alien.png"),
-    "squid": pygame.image.load("Media/squid.png"),
-    "ufo": pygame.image.load("Media/ufo.png"),
-}
-
+player_img = pygame.image.load("Media/player.png")
+invader_img = pygame.image.load("Media/invader.png")
+alien_img = pygame.image.load("Media/alien.png")
+squid_img = pygame.image.load("Media/squid.png")
+ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.jpg")
 
-sounds = {
-    "shoot": pygame.mixer.Sound("Media/sound/invaderkilled.wav"),
-    "soundtrack": pygame.mixer.Sound("Media/sound/soundtrack.wav")
+#Invader types
+
+INVADER_TYPES = {
+    "alien": {
+        "img": alien_img,
+        "health": 1,
+        "bullet_speed": 3,
+        "fire_rate": 0.002,
+        "points": 10
+    },
+    "squid": {
+        "img": squid_img,
+        "health": 2,
+        "bullet_speed": 4,
+        "fire_rate": 0.004,
+        "points": 20
+    },
+    "invader": {
+        "img": invader_img,
+        "health": 3,
+        "bullet_speed": 5,
+        "fire_rate": 0.006,
+        "points": 50
+    }
 }
-pygame.mixer.music.load("Media/sound/soundtrack.wav")
-pygame.mixer.music.set_volume(0.3)
-pygame.mixer.music.play(-1)
 
-game = Game(screen, images, sounds, bg_img)
-game.run()
+#Sound files path
 
+def check_sound_path(path):
+    try:
+        return pygame.mixer.Sound(path)
+    except Exception:
+        return None
+
+
+SHOOT_SOUND_PATH = check_sound_path("Media/sound/invaderkilled.wav")
+SOUNDTRACK_PATH = check_sound_path("Media/sound/soundtrack.wav")
+
+shoot_sound = check_sound_path(SHOOT_SOUND_PATH)
+soundtrack_sound = check_sound_path(SOUNDTRACK_PATH)
+
+try:
+    pygame.mixer.music.load("Media/sound/soundtrack.wav")
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+except Exception:
+    pass
+
+#----Classes
+class Actor:
+    def __init__(self, x, y, img, l, h, speed, direction):
+        self.x = x
+        self.y = y
+        self.img = pygame.transform.scale(img, (l, h))
+        self.l = l
+        self.h = h
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.speed = speed
+        self.direction = direction
+        
+
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+             
+        
+class Defender(Actor):
+    def __init__(self, x, y, img, l, h, cooldown):
+        super().__init__(x, y, img, l, h, speed=0, direction=0)
+        self.score = 0
+        self.lives = 3
+        self.bullet_type = "normal"
+        self.cooldown = cooldown
+        
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)  
+           
+class Invader(Actor):
+    def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
+        super().__init__(x, y, img, l, h, speed=1, direction=1)
+        self.point_value = point_value
+        self.health = health 
+        self.bullet_speed = bullet_speed
+        self.fire_rate = fire_rate
+
+    def update(self):
+        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)         
+
+class Bullet:
+    def __init__(self, x, y, w, h, speed, owner):
+        self.x = x
+        self.y = y
+        self.width = w
+        self.height = h
+        self.speed = speed
+        self.owner = owner
+        self.rect = pygame.Rect(self.x, self.y, w, h)
+    def update(self):
+        self.y += self.speed
+        self.rect.topleft = (self.x, self.y)
+ 
+class Game:
+    def __init__(self):
+        self.level = 10
+        self.score = 0
+        self.invaders = []
+        self.invader_startrow = 10
+        self.invader_endrow = 300
+        self.invader_startcol = 100
+        self.invader_endcol = 400 
+        self.enemy_bullets = []
+        self.enemy_bullet_speed = 5
+        self.font = pygame.font.Font(None, 32)
+        self.FPS = 60
+        self.clock = pygame.time.Clock()
+        self.SCREEN_HEIGHT = 500
+        self.SCREEN_WIDTH = 500        
+        self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
+        
+        
+    def draw_invaders(self):
+        self.invaders.clear()
+        config = self.get_level_config()
+        ROWS = config["rows"]
+        COLS = config["cols"]
+        START_X = 60
+        SPACING_X = 45
+        START_Y = 40
+        SPACING_Y = 35
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                
+                x = START_X + c * SPACING_X
+                y = START_Y + r * SPACING_Y
+                inv_type = self.pick_invader_type()
+                types = INVADER_TYPES[inv_type]
+                inv = Invader(x,y,types["img"],40, 40,types["health"],types["bullet_speed"],types["points"],types["fire_rate"])
+                inv.speed = config["speed"]
+                self.invaders.append(inv)
+          
+    def start_screen(self):
+        font = pygame.font.Font(None, 48)
+        text = font.render("Space Invaders", True, (255,255,255))
+        start_text = font.render("Press SPACE to start", True, (255,255,255))
+
+        running = True
+        
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(start_text, (100,200))
+            self.screen.blit(text, (120,100))  
+            pygame.display.flip()
+            
+    def game_over_screen(self):
+        font = pygame.font.Font(None, 48)
+        game_over_text= font.render("GAME OVER", True, (255,255,255))
+        game_over_text2 = font.render("press SPACE to restart", True, (255,255,255))
+        
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(game_over_text, (150,200))
+            self.screen.blit(game_over_text2, (85,300))
+            pygame.display.flip()
+            
+    def next_level_screen(self):
+        font = pygame.font.Font(None, 48)
+        game_over_text= font.render(f"Level: {self.level} complete", True, (255,255,255))
+        game_over_text2 = font.render("press SPACE to continue", True, (255,255,255))
+        
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            self.screen.blit(bg_img, (0,0))
+            self.screen.blit(game_over_text, (150,200))
+            self.screen.blit(game_over_text2, (85,300))
+            pygame.display.flip()
+
+    def score_level_display(self, screen):
+        score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
+        level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+        screen.blit(level_text, (self.SCREEN_WIDTH - level_text.get_width() - 10, 10))
+
+    def invaders_shoot(self):
+        for inv in self.invaders:
+        
+            if random.random() < inv.fire_rate:
+                self.enemy_bullets.append(
+                    Bullet(
+                        inv.x + inv.l//2,
+                        inv.y + inv.h,
+                        4, 10,
+                        speed=inv.bullet_speed,
+                        owner="enemy"
+                )
+                
+            )
+                shoot_sound.play()
+                
+    def invader_movement(self):
+        hit_wall = False
+
+        for inv in self.invaders:
+            self.screen.blit(inv.img, (inv.x, inv.y))
+            inv.update()
+
+        for inv in self.invaders:
+            next_x = inv.x + inv.speed * inv.direction
+
+            if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH:
+                hit_wall = True
+                break
+
+        if hit_wall:
+            for inv in self.invaders:
+                inv.direction *= -1
+                inv.y += 10
+
+        for inv in self.invaders:
+            inv.x += inv.speed * inv.direction
+            inv.update()
+            
+    def pick_invader_type(self):
+
+        level = self.level
+        prob_invader = min(0.004 + level * 0.004, 0.008)     #Change the invader spawinng chances
+        prob_squid = min(0.08 + level * 0.08, 0.4)   
+        r = random.random()
+        if r < prob_invader:
+            return "invader"
+        elif r < prob_invader + prob_squid:
+            return "squid"
+        else:
+            return "alien" 
+ 
+    def get_level_config(self):
+        level = self.level
+        config = {}
+        config["speed"] = 0.5  + (level * 0.00005)
+        config["enemy_fire_rate"] = 0.001 + (level * 0.0003)
+        config["rows"] = min(5 + level // 2, 10)   
+        config["cols"] = min(8 + level // 3, 12)   
+        return config
+
+#Create game instance and start
+game = Game()
+game.start_screen()
+game.draw_invaders()
+
+running = True
+while running:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+            sys.exit()
+                
+    game.screen.blit(bg_img, (0,0))
+    game.score_level_display(game.screen)
+    game.invader_movement()
+    game.invaders_shoot()
+    game.score_level_display(game.screen)
+    game.screen.blit(bg_img, (0,0))
+    game.score_level_display(game.screen)
+            
+    for inv in game.invaders:
+        game.screen.blit(inv.img, (inv.x, inv.y))
+        inv.update()
+        
+    for inv in game.invaders:
+        inv.x += inv.speed * inv.direction
+        inv.update()   
+        
+    for inv in game.invaders:
+        if inv.x <= 0 or inv.x + inv.l >= game.SCREEN_WIDTH:
+            for i in game.invaders:
+                i.direction *= -1
+                i.y += 10
+                             
+            break
+    
+    for bullet in game.enemy_bullets[:]:
+        bullet.update()
+        pygame.draw.rect(game.screen, (0, 255, 0), bullet.rect) 
+
+        if bullet.y > game.SCREEN_HEIGHT:
+            game.enemy_bullets.remove(bullet)
+                 
+    pygame.display.flip()
+    game.clock.tick(game.FPS)
