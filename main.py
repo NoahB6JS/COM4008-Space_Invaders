@@ -1,5 +1,3 @@
-#Imported modules
-
 import sys
 import pygame
 import random
@@ -96,12 +94,10 @@ class Game:
         self.font = pygame.font.Font(None, 32)
         
     def draw_invaders(self):
-
         self.invaders.clear()
         config = get_level_config(self.level)
         ROWS = config["rows"]
         COLS = config["cols"]
-
         START_X = 60
         SPACING_X = 45
         START_Y = 40
@@ -109,12 +105,12 @@ class Game:
 
         for r in range(ROWS):
             for c in range(COLS):
-
-                inv_type = pick_invader_type(self.level)
-                t = INVADER_TYPES[inv_type]
+                
                 x = START_X + c * SPACING_X
                 y = START_Y + r * SPACING_Y
-                inv = Invader(x,y,t["img"],40, 40,t["health"],t["bullet_speed"],t["points"],t["fire_rate"])
+                inv_type = pick_invader_type(self.level)
+                types = INVADER_TYPES[inv_type]
+                inv = Invader(x,y,types["img"],40, 40,types["health"],types["bullet_speed"],types["points"],types["fire_rate"])
                 inv.speed = config["speed"]
                 self.invaders.append(inv)
           
@@ -124,6 +120,7 @@ class Game:
         start_text = font.render("Press SPACE to start", True, (255,255,255))
 
         running = True
+        
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -171,7 +168,6 @@ class Game:
             screen.blit(game_over_text, (150,200))
             screen.blit(game_over_text2, (85,300))
             pygame.display.flip()
-
 
     def score_level_display(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
@@ -269,7 +265,6 @@ while running:
         screen.blit(inv.img, (inv.x, inv.y))
         inv.update()
         
-    
     for inv in game.invaders:
         inv.x += inv.speed * inv.direction
         inv.update()   
