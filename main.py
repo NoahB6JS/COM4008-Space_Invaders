@@ -1,9 +1,33 @@
 import sys
 import pygame
 import random
+import os
 
+#mixing sound files before loop (dont delete)
+pygame.init()
+pygame.mixer.init()
+
+#Media checkerr
+check_files = ["Media/player.png", "Media/invader.png", "Media/alien.png",
+               "Media/squid.png", "Media/ufo.png", "Media/bg.png",
+                "Media/sound/soundtrack.wav"]
+
+#EXCEPTION HANDLING FOR THE MEDIA FILE BEFORE GAME STARTS.
+
+for file in check_files:
+    try:
+        if file[-3:] == "png": #CHecks files extension
+            file = pygame.image.load(file)
+        else:
+            file = pygame.mixer.Sound(file)
+    except Exception as e:
+        print(f"ERROR LOADING MEDIA: {file}: {e}") #error message if file not found
+        pygame.quite()
+        sys.exit()
+
+
+        
 #---------------------------The game assets---------------------------
-
 pygame.init()
 pygame.mixer.init()
 player_img = pygame.image.load("Media/player.png")
@@ -11,12 +35,12 @@ invader_img = pygame.image.load("Media/invader.png")
 alien_img = pygame.image.load("Media/alien.png")
 squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
-bg_img = pygame.image.load("Media/bg.jpg")
+bg_img = pygame.image.load("Media/bg.png")
 
 INVADER_TYPES = {
     "alien": {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.002, "points": 10},
     "squid": {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.004, "points": 20},
-    "invader": {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 50},
+    "invader": {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 30},
 }
 
 def check_sound_path(path):
@@ -27,6 +51,7 @@ def check_sound_path(path):
 
 SHOOT_SOUND_PATH = check_sound_path("Media/sound/invaderkilled.wav")
 SOUNDTRACK_PATH = check_sound_path("Media/sound/soundtrack.wav")
+
 shoot_sound = check_sound_path(SHOOT_SOUND_PATH)
 soundtrack_sound = check_sound_path(SOUNDTRACK_PATH)
 
@@ -93,7 +118,6 @@ class Bullet:
     def update(self):
         self.y += self.speed
         self.rect.topleft = (self.x, self.y)
-
 class Game:
     def __init__(self):
         self.level = 1
@@ -141,7 +165,6 @@ class Game:
                 y = START_Y + row * SPACING_Y
                 
                 
-            
                 if self.level >= 3:
                     if row < 1:
                         inv_type = "invader"  
@@ -151,7 +174,6 @@ class Game:
                   inv_type = "alien"
                 
                 types = INVADER_TYPES[inv_type]
-            
                 inv = Invader(
                     x, y,
                     types["img"],
