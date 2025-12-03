@@ -3,11 +3,11 @@ import pygame
 import random
 import os
 
-#mixing sound files before loop (dont delete)
+#mixing sound files before loop (dont delete) - only for sounds
 pygame.init()
 pygame.mixer.init()
 
-#Media checkerr
+#Media checker
 check_files = ["Media/player.png", "Media/invader.png", "Media/alien.png",
                "Media/squid.png", "Media/ufo.png", "Media/bg.png",
                 "Media/sound/soundtrack.wav","Media/sound/laser.wav"]
@@ -46,9 +46,12 @@ except Exception:
 #INVADER TYPES DICTIONARY
 
 INVADER_TYPES = {
-    "alien": {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.002, "points": 10},
-    "squid": {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.004, "points": 20},
-    "invader": {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 30},
+    "alien": #easiest
+    {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.002, "points": 10},
+    "squid": 
+    {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.004, "points": 20},
+    "invader": #most difficult
+      {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 30},
 }
 
 #---------------------------my classes---------------------------
@@ -65,9 +68,11 @@ class Actor:
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+
+
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
-        super().__init__(x, y, img, l, h, speed=0, direction=0) #inheriting the actor class attributes
+        super().__init__(x, y, img, l, h, speed=0, direction=0) #inheriting the actor class attributes#
         self.score = 0
         self.lives = 3
         self.bullet_type = "normal"
@@ -94,6 +99,7 @@ class Invader(Actor):
         if random.random() < self.fire_rate:
             return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
+    
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
         self.x = x

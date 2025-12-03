@@ -1,4 +1,4 @@
-from game_assets import *
+from game_assets import * #loads in ALL classes and methods from game_assets file and makes them accessible from main.py
 
 class Game:
     def __init__(self):
@@ -34,14 +34,14 @@ class Game:
     def draw_invaders(self):
         self.invaders.clear()
         config = self.get_level_config()
-        ROWS = config["rows"]
-        COLS = config["cols"]
+        rows = config["rows"]
+        COLS = 8
         START_X = 60
         SPACING_X = 45
         START_Y = 40
         SPACING_Y = 35
 
-        for row in range(ROWS):
+        for row in range(rows):
             for col in range(COLS):
                 x = START_X + col * SPACING_X
                 y = START_Y + row * SPACING_Y
@@ -67,7 +67,7 @@ class Game:
             )
             
                 inv.speed = 1 + self.level * 0.01  
-                self.invaders.append(inv)
+                self.invaders.append(inv) #appending the inv (invader) object and its attributes
             
             
     # --- Game helpers ---
@@ -97,25 +97,13 @@ class Game:
             if bullet.y > self.SCREEN_HEIGHT:
                 self.enemy_bullets.remove(bullet)
 
-    def pick_invader_type(self):
-        level = self.level
-        prob_invader = min(0.004 + level * 0.004, 0.008)
-        prob_squid = min(0.08 + level * 0.08, 0.4)
-        r = random.random()
-        if r < prob_invader:
-            return "invader"
-        elif r < prob_invader + prob_squid:
-            return "squid"
-        else:
-            return "alien"
 
-    def get_level_config(self):
-        level = self.level
+    def get_level_config(self): #level calc for invader sequqnce
+        level = self.level #attribute of game starts at 1
         config = {}
         config["speed"] = 0.5 + (level * 0.00005)
         config["enemy_fire_rate"] = 0.001 + (level * 0.0003)
         config["rows"] = min(5 + level // 2, 10)
-        config["cols"] = min(8 + level // 3, 12)
         return config
 
     def draw(self):
