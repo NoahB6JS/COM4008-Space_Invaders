@@ -159,3 +159,7 @@ while running:
         if keys[pygame.K_RIGHT] and player.x + player.l < SCREEN_WIDTH:
              player.x += player.speed
     game.clock.tick(game.FPS)
+     # Player firing
+if keys[pygame.K_SPACE] and player.cooldown_counter == 0:
+    game.player_bullets.append(Bullet(player.x + 18, player.y, 4, 10, -7, "player"))
+    player.cooldown_counter = player.cooldown
