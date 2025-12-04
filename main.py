@@ -173,3 +173,35 @@ while running:
             game.enemy_bullets.append(bullet)
             shoot_sound.play()
             
+    pygame.display.flip()
+    clock.tick(FPS)
+    if keys[pygame.K_LEFT] and player.x>0:
+        player.X -=player.speed
+        if keys[pygame.K_RIGHT] and player.x + player.l < SCREEN_WIDTH:
+             player.x += player.speed
+    game.clock.tick(game.FPS)
+     # Player firing
+if keys[pygame.K_SPACE] and player.cooldown_counter == 0:
+    game.player_bullets.append(Bullet(player.x + 18, player.y, 4, 10, -7, "player"))
+    player.cooldown_counter = player.cooldown
+     # Player bullet movement
+for bullet in game.player_bullets[:]:
+    bullet.update()
+    pygame.draw.rect(screen, (255,255,0), bullet.rect)
+    if bullet.y < 0:
+        game.player_bullets.remove(bullet)
+
+# Hit invaders
+for inv in game.invaders[:]:
+    if bullet.rect.colliderect(inv.rect):
+        inv.health -= 1
+        game.player_bullets.remove(bullet)
+        if inv.health <= 0:
+            game.score += inv.point_value
+game.invaders.remove(inv)
+break
+if player.cooldown_counter > 0:
+     player.cooldown_counter -= 1
+
+
+
