@@ -6,6 +6,7 @@ class Game:
         self.score = 0
         self.invaders = []
         self.enemy_bullets = []
+        self.player_bullets = []
         self.font = pygame.font.Font(None, 32)
         self.FPS = 60
         self.clock = pygame.time.Clock()
@@ -109,6 +110,23 @@ class Game:
     def draw(self):
         self.screen.blit(bg_img, (0, 0))
         self.score_level_display(self.screen)
+        
+    def check_if_shot_invader(self):
+        for bullet in self.player_bullets:
+            for inv in self.invaders:
+                
+                if bullet.rect.colliderect(pygame.Rect(inv.x, inv.y, inv.l, inv.h)):
+                    
+                 inv.speed += 1
+                 inv.health -= 1
+                 
+                 if inv.health <= 0:
+                    self.score += inv.point_value
+                    self.invaders.remove(inv)
+                 break
+            
+            
+            
 
 #---------------------------The game loop---------------------------
 
