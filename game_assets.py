@@ -72,7 +72,7 @@ class Actor:
 
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
-        super().__init__(x, y, img, l, h, speed=0, direction=0) #inheriting the actor class attributes#
+        super().__init__(x, y, img, l, h, speed=10, direction=0) #inheriting the actor class attributes#
         self.score = 0
         self.lives = 3
         self.bullet_type = "normal"

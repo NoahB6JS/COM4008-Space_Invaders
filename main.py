@@ -15,6 +15,7 @@ class Game:
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
 
 #-----------------------The in game screens---------------------------------------
+
     def start_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Space Invaders", True, (255, 255, 255))
@@ -47,7 +48,6 @@ class Game:
                 x = START_X + col * SPACING_X
                 y = START_Y + row * SPACING_Y
                 
-                
                 if self.level >= 3:
                     if row < 1:
                         inv_type = "invader"  
@@ -69,7 +69,6 @@ class Game:
             
                 inv.speed = 1 + self.level * 0.01  
                 self.invaders.append(inv) #appending the inv (invader) object and its attributes
-            
             
     # --- Game helpers ---
     def score_level_display(self, screen):
@@ -126,13 +125,24 @@ class Game:
                  break
             
             
-            
-
 #---------------------------The game loop---------------------------
 
 game = Game() #create game instance
 game.start_screen()
 game.draw_invaders()
+
+player_width = 40
+player_height = 40
+
+game.player = Defender(
+    x=game.SCREEN_WIDTH // 2 - player_width // 2,
+    y=game.SCREEN_HEIGHT - player_height - 20,
+    img=player_img,
+    l=player_width,
+    h=player_height,
+    cooldown=400
+    
+)
 
 running = True
 while running:
@@ -141,10 +151,21 @@ while running:
             running = False
             pygame.quit()
             sys.exit()
-
-    game.draw() #draws the background and score + level
-    game.invader_movement() #moves invaders
-    game.update_enemy_bullets() #updates enemy bullets
+               
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and game.player.x>0:
+        game.player.x -=game.player.speed
+    elif keys[pygame.K_RIGHT] and game.player.x + game.player.l < game.SCREEN_WIDTH:
+             game.player.x += game.player.speed
+     #all game methods        
+    game.screen.blit(bg_img, (0, 0))   
+    game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
+    game.invader_movement()  
+    game.update_enemy_bullets()  
+    game.check_if_shot_invader()  
+    game.score_level_display(game.screen)  
+    pygame.display.flip()
+    game.clock.tick(game.FPS)
 
     for inv in game.invaders:
         bullet = inv.chance_of_shot()
@@ -152,10 +173,3 @@ while running:
             game.enemy_bullets.append(bullet)
             shoot_sound.play()
             
-    pygame.display.flip()
-    clock.tick(FPS)
-    if keys[pygame.K_LEFT] and player.x>0:
-        player.X -=player.speed
-        if keys[pygame.K_RIGHT] and player.x + player.l < SCREEN_WIDTH:
-             player.x += player.speed
-    game.clock.tick(game.FPS)
