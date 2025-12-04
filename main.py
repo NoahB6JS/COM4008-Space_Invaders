@@ -291,4 +291,7 @@ while running:
                  
     pygame.display.flip()
     clock.tick(FPS)
-
+    if keys[pygame.K_LEFT] and player.x>0:
+        player.X -=player.speed
+        if keys[pygame.K_RIGHT] and player.x + player.l < SCREEN_WIDTH:
+             player.x += player.speed
