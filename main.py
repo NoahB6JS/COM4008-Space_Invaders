@@ -14,6 +14,7 @@ class Game:
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
 
 #-----------------------The in game screens---------------------------------------
+
     def start_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Space Invaders", True, (255, 255, 255))
@@ -47,7 +48,7 @@ class Game:
                 y = START_Y + row * SPACING_Y
                 
                 
-                if self.level >= 3:
+                if self.level >= 3:         
                     if row < 1:
                         inv_type = "invader"  
                 elif row < 3:
