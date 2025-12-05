@@ -33,6 +33,21 @@ class Game:
             self.screen.blit(text, (120, 100))
             pygame.display.flip()
 
+    def end_screen(self):
+        font = pygame.font.Font(None, 48)
+        text = font.render("Game Over", True, (255, 0, 0))
+        score_text = font.render(f"Final Score: {self.score}", True, (255, 255, 255))
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            self.screen.blit(bg_img, (0, 0))
+            self.screen.blit(text, (150, 100))
+            self.screen.blit(score_text, (130, 200))
+            pygame.display.flip()
+
     def draw_invaders(self):
         self.invaders.clear()
         config = self.get_level_config()
@@ -106,7 +121,7 @@ class Game:
         level = self.level 
         config = {}
         config["speed"] = 0.5 + (level * 0.00005)
-        config["enemy_fire_rate"] = 0.001 + (level * 0.0003)
+        config["enemy_fire_rate"] = 0.001 + (level * 0.0003)   
         config["rows"] = min(5 + level // 2, 10)
         return config
 
@@ -200,7 +215,14 @@ while running:
             game.enemy_bullets.remove(bullet)
             game.player.lives -= 1
             if game.player.lives <= 0:
-                running = False
+                game.end_screen()
+
+    if len(game.invaders) ==25: #check if game need to enter new level
+        new_level_text = game.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
+        game.screen.blit(new_level_text, (10, 10))
+        time.sleep(5)
+        game.level += 1
+        game.draw_invaders()
                 
 
     for inv in game.invaders: #check if invaders reach the player

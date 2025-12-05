@@ -2,6 +2,7 @@ import sys
 import pygame
 import random
 import os
+import time
 
 #mixing sound files before loop (dont delete) - only for sounds
 pygame.init()
