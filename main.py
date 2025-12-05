@@ -76,7 +76,7 @@ class Game:
     def score_level_display(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
-        lives_text = self.font.render(f"Lives: {3}", True, (255, 255, 255))
+        lives_text = self.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
         screen.blit(level_text, (self.SCREEN_WIDTH - level_text.get_width() - 10, 10))
         screen.blit(lives_text, (self.SCREEN_WIDTH//2 - lives_text.get_width()//2, 10))
@@ -198,6 +198,10 @@ while running:
     for bullet in game.enemy_bullets:
         if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
             game.enemy_bullets.remove(bullet)
+            game.player.lives -= 1
+            if game.player.lives <= 0:
+                running = False
+                
 
     for inv in game.invaders: #check if invaders reach the player
         if inv.y + inv.h >= game.player.y:
