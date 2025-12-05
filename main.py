@@ -16,6 +16,14 @@ class Game:
 
 #-----------------------The in game screens---------------------------------------
 
+    def invader_shooting(self):
+        for inv in self.invaders:
+            bullet = inv.chance_of_shot()
+            if bullet:
+                self.enemy_bullets.append(bullet)
+                shoot_sound.play()
+
+
     def start_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Space Invaders", True, (255, 255, 255))
@@ -195,6 +203,7 @@ while running:
     game.invader_movement()  
     game.update_enemy_bullets()  
     game.check_if_shot_invader()  
+    game.invader_shooting()
 
 
     for bullet in game.player_bullets[:]:
@@ -203,12 +212,6 @@ while running:
         if bullet.y < 0:
             game.player_bullets.remove(bullet)
     
-
-    for inv in game.invaders:
-        bullet = inv.chance_of_shot()
-        if bullet:
-            game.enemy_bullets.append(bullet)
-            shoot_sound.play()
 
     for bullet in game.enemy_bullets:
         if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
