@@ -56,7 +56,7 @@ INVADER_TYPES = {
 
 #---------------------------my classes---------------------------
 class Actor:
-    def __init__(self, x, y, img, l, h, speed, direction):
+    def __init__(self, x, y, img, l, h, speed, direction, cooldown_counter ):
         self.x = x
         self.y = y
         self.img = pygame.transform.scale(img, (l, h))
@@ -65,6 +65,7 @@ class Actor:
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
         self.speed = speed
         self.direction = direction
+        self.cooldown_counter = cooldown_counter 
 
     def update(self):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
@@ -72,7 +73,7 @@ class Actor:
 
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
-        super().__init__(x, y, img, l, h, speed=0, direction=0) #inheriting the actor class attributes#
+        super().__init__(x, y, img, l, h, speed=10, direction=0, cooldown_counter=0 ) #inheriting the actor class attributes#
         self.score = 0
         self.lives = 3
         self.bullet_type = "normal"
@@ -82,7 +83,7 @@ class Defender(Actor):
         self.rect = pygame.Rect(self.x, self.y, self.l, self.h) # updates the users boundaries
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
-        super().__init__(x, y, img, l, h, speed=1, direction=1)
+        super().__init__(x, y, img, l, h, speed=1, direction=1, cooldown_counter=0)
         self.point_value = point_value
         self.health = health
         self.bullet_speed = bullet_speed
@@ -99,6 +100,7 @@ class Invader(Actor):
         if random.random() < self.fire_rate:
             return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
+    
     
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
