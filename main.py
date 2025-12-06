@@ -152,7 +152,11 @@ class Game:
                 
                     if inv.health <= 0:
                         self.score += inv.point_value
-                        self.invaders.remove(inv) #adding point value for invader when hit and removing the invader
+                        self.invaders.remove(inv) #adding point value for invader when hit and removing the invade
+                        for inv in self.invaders:
+                            inv.speed += 0.05
+
+                    
                 
                 # Remove bullet after hitting **any** invader
                     if bullet in self.player_bullets:
@@ -206,7 +210,6 @@ while running:
     
     game.screen.blit(bg_img, (0, 0))   
     game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
-    
     game.invader_movement()  
     game.update_enemy_bullets()  
     game.check_if_shot_invader()  
