@@ -48,11 +48,11 @@ except Exception:
 
 INVADER_TYPES = {
     "alien": #easiest
-    {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.002, "points": 10},
+    {"img": alien_img, "health": 1, "bullet_speed": 3, "fire_rate": 0.001, "points": 10},
     "squid": 
-    {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.004, "points": 20},
+    {"img": squid_img, "health": 2, "bullet_speed": 4, "fire_rate": 0.0002, "points": 20},
     "invader": #most difficult
-      {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.006, "points": 30},
+      {"img": invader_img, "health": 3, "bullet_speed": 5, "fire_rate": 0.0003, "points": 30},
 }
 
 #---------------------------my classes---------------------------
@@ -69,9 +69,9 @@ class Actor:
         self.cooldown_counter = cooldown_counter 
 
     def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h)
+        self.rect.topleft = (self.x, self.y) #increases the bullet accuracy, updating the rec xy pos
 
-
+        
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
         super().__init__(x, y, img, l, h, speed=10, direction=0, cooldown_counter=0 ) #inheriting the actor class attributes#
@@ -79,9 +79,6 @@ class Defender(Actor):
         self.lives = 3
         self.bullet_type = "normal"
         self.cooldown = cooldown
-
-    def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) # updates the users boundaries
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1, cooldown_counter=0)
@@ -89,9 +86,6 @@ class Invader(Actor):
         self.health = health
         self.bullet_speed = bullet_speed
         self.fire_rate = fire_rate
-
-    def update(self):
-        self.rect = pygame.Rect(self.x, self.y, self.l, self.h) #inheriting the actor class attributes
 
     def move(self):
         self.x += self.speed * self.direction
@@ -102,7 +96,8 @@ class Invader(Actor):
             return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
     
-    
+    def draw(self, screen):
+        screen.blit(self.img, (self.x, self.y))
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
         self.x = x

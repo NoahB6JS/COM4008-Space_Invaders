@@ -65,31 +65,38 @@ class Game:
         SPACING_X = 45
         START_Y = 40
         SPACING_Y = 35
+        max_row = 8
 
-        for row in range(rows):
+        for row in range(min(rows,max_row)):
             for col in range(COLS):
                 x = START_X + col * SPACING_X
                 y = START_Y + row * SPACING_Y
-        
-                if self.level >= 3:
-                    if row < 1:
+                if self.level >= 6:
+                    if row == 0:
                         inv_type = "invader"  
+                    elif row < 3:
+                        inv_type = "squid"
                     else:
                         inv_type = "alien"
-                elif row < 3:
-                    inv_type = "squid"
+
+                elif self.level >= 3:
+                    if row == 0:
+                        inv_type = "squid"    
+                    else:
+                        inv_type = "alien"
                 else:
-                    inv_type = "alien"
-                
+                    inv_type = "alien"   
+
+                 #sclaing invader difficlty based on level.
                 types = INVADER_TYPES[inv_type]
                 inv = Invader(
-                    x, y,
+                    x, y, 
                     types["img"],
                     l=40, h=40,
                     health=types["health"],
-                    bullet_speed=types["bullet_speed"],
+                    bullet_speed=types["bullet_speed"] + self.level,
                     point_value=types["points"],
-                    fire_rate=types["fire_rate"]
+                    fire_rate=types["fire_rate"] + (self.level * 0.00002)
             )
             
                 inv.speed = 1 + self.level * 0.01  
@@ -220,7 +227,7 @@ while running:
             if game.player.lives <= 0:
                 game.end_screen()
 
-    if len(game.invaders) ==25: #check if game need to enter new level
+    if len(game.invaders) ==0: #check if game need to enter new level
         new_level_text = game.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
         game.screen.blit(new_level_text, (10, 10))
         time.sleep(5)
