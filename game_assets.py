@@ -1,7 +1,6 @@
 import sys
 import pygame
 import random
-import os
 import time
 
 #mixing sound files before loop (dont delete) - only for sounds
@@ -71,7 +70,6 @@ class Actor:
     def update(self):
         self.rect.topleft = (self.x, self.y) #increases the bullet accuracy, updating the rec xy pos
 
-        
 class Defender(Actor):
     def __init__(self, x, y, img, l, h, cooldown):
         super().__init__(x, y, img, l, h, speed=10, direction=0, cooldown_counter=0 ) #inheriting the actor class attributes#

@@ -41,6 +41,27 @@ class Game:
             self.screen.blit(text, (120, 100))
             pygame.display.flip()
 
+    def level_up_screen(self):
+        font = pygame.font.Font(None, 48)
+        text = font.render(f"Level {self.level}", True, (255, 255, 255))
+        score_text = font.render(f"score: {self.score}", True, (255, 255, 255))
+        start_text = font.render("Press SPACE to start level", True, (255, 255, 255))
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    running = False
+            self.screen.blit(bg_img, (0, 0))
+            self.screen.blit(text, (200, 150))
+            self.screen.blit(score_text, (180, 250))
+            self.screen.blit(start_text, (50, 350))
+            pygame.display.flip()
+            time.sleep(2)
+            running = False
+
     def end_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Game Over", True, (255, 0, 0))
@@ -230,17 +251,17 @@ while running:
             if game.player.lives <= 0:
                 game.end_screen()
 
-    if len(game.invaders) ==0: #check if game need to enter new level
-        new_level_text = game.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
-        game.screen.blit(new_level_text, (10, 10))
-        time.sleep(5)
-        game.level += 1
-        game.draw_invaders()
+    
                 
 
     for inv in game.invaders: #check if invaders reach the player
         if inv.y + inv.h >= game.player.y:
             running = False
+
+    if len(game.invaders) == 0:  #all invaders defeated
+        game.level += 1
+        game.level_up_screen()
+        game.draw_invaders()
     
     game.score_level_display(game.screen)
     pygame.display.flip()
