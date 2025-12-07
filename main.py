@@ -108,10 +108,10 @@ class Game:
                 else:
                     inv_type = "alien"   
 
-                 #sclaing invader difficlty based on level.
+                 #scaling invader difficlty based on level.
                 types = INVADER_TYPES[inv_type]
-                inv = Invader(
-                    x, y, 
+                inv = Invader(#instantiate invader object
+                    x, y, #all attributes:
                     types["img"],
                     l=40, h=40,
                     health=types["health"],
@@ -119,12 +119,12 @@ class Game:
                     point_value=types["points"],
                     fire_rate=types["fire_rate"] + (self.level * 0.00002)
             )
-            
-                inv.speed = 1 + self.level * 0.01  
+                inv.speed = 1 + self.level * 0.01 #increase speed as invaders are shot
                 self.invaders.append(inv) #appending the inv (invader) object and its attributes
             
     # --- Game helpers ---
     def score_level_display(self, screen):
+        #blitting all the score, level and lives text onto the screen
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
         lives_text = self.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
@@ -134,23 +134,24 @@ class Game:
 
 
     def invader_movement(self):
-        hit_wall = False
+        hit_wall = False #while invader hasnt hit the wall
+        
         for inv in self.invaders:
-            inv.move()
+            inv.move()#move method called from invader class
             self.screen.blit(inv.img, (inv.x, inv.y))
-            next_x = inv.x + inv.speed * inv.direction
-            if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH:
+            next_x = inv.x + inv.speed * inv.direction # next x position
+            if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH: # checks if invaders are on either end of screen side
                 hit_wall = True
         if hit_wall:
             for inv in self.invaders:
-                inv.direction *= -1
-                inv.y += 10
+                inv.direction *= -1 # multiplies the direction by -1 to reverse direction
+                inv.y += 10 #10px down if wall is hit
 
     def update_enemy_bullets(self):
         for bullet in self.enemy_bullets[:]:
             bullet.update()
-            pygame.draw.rect(self.screen, (0, 255, 0), bullet.rect)
-            if bullet.y > self.SCREEN_HEIGHT:
+            pygame.draw.rect(self.screen, (0, 255, 0), bullet.rect) # draws enemy bullet in green
+            if bullet.y > self.SCREEN_HEIGHT: # removes bullet if wall is hit
                 self.enemy_bullets.remove(bullet)
 
     def get_level_config(self): 
@@ -177,8 +178,7 @@ class Game:
                         for inv in self.invaders:
                             inv.speed += 0.05
 
-                    
-                
+        
                 # Remove bullet after hitting **any** invader
                     if bullet in self.player_bullets:
                         self.player_bullets.remove(bullet)
@@ -202,9 +202,6 @@ game.player = Defender(
     h=player_height,
     cooldown=20)
 
-game.player.speed = 5
-game.player.cooldown_counter = 0  
-
 #main game loop
 running = True
 while running:
@@ -212,23 +209,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
-            sys.exit()
+            sys.exit() 
                
-    keys = pygame.key.get_pressed() #All keys checked if pressed for player
-    if keys[pygame.K_LEFT] and game.player.x > 0:
-        game.player.x -= game.player.speed
 
-    if keys[pygame.K_RIGHT] and game.player.x + game.player.l < game.SCREEN_WIDTH:
-        game.player.x += game.player.speed
-
-    if keys[pygame.K_SPACE] and game.player.cooldown_counter == 0:
-        game.player_bullets.append(Bullet(game.player.x + game.player.l//2 - 2, game.player.y, 4, 10, -7, "player"))
-        game.player.cooldown_counter = game.player.cooldown
-    
-    if game.player.cooldown_counter > 0:
-        game.player.cooldown_counter -= 1
-
-    
+    game.player.movement(game.SCREEN_WIDTH, game.player_bullets)
     game.screen.blit(bg_img, (0, 0))   
     game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
     game.invader_movement()  
@@ -252,8 +236,6 @@ while running:
                 game.end_screen()
 
     
-                
-
     for inv in game.invaders: #check if invaders reach the player
         if inv.y + inv.h >= game.player.y:
             running = False

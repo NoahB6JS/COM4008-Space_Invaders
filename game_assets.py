@@ -77,6 +77,31 @@ class Defender(Actor):
         self.lives = 3
         self.bullet_type = "normal"
         self.cooldown = cooldown
+        self.cooldown_counter = 0
+
+    def movement(self, SCREEN_WIDTH, bullet_list): 
+        keys = pygame.key.get_pressed() #All keys checked if pressed for player
+        if keys[pygame.K_LEFT] and self.x > 0:
+            self.x -= self.speed
+
+        if keys[pygame.K_RIGHT] and self.x + self.l < SCREEN_WIDTH:
+            self.x += self.speed
+
+        if keys[pygame.K_SPACE] and self.cooldown_counter == 0:
+            bullet_list.append(
+                Bullet(
+                self.x + self.l // 2 - 2,
+                self.y,
+                4, 10,
+                -7,
+                "player"
+                )
+            )
+            self.cooldown_counter = self.cooldown
+    
+        if self.cooldown_counter > 0:
+            self.cooldown_counter -= 1
+            
 class Invader(Actor):
     def __init__(self, x, y, img, l, h, health, bullet_speed, point_value, fire_rate):
         super().__init__(x, y, img, l, h, speed=1, direction=1, cooldown_counter=0)
