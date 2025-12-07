@@ -204,48 +204,52 @@ game.player = Defender(
     cooldown=20)
 
 #main game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
-            sys.exit() 
-               
+try:
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                sys.exit() 
 
-    game.player.movement(game.SCREEN_WIDTH, game.player_bullets)
-    game.screen.blit(bg_img, (0, 0))   
-    game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
-    game.invader_movement()  
-    game.update_enemy_bullets()  
-    game.check_if_shot_invader()  
-    game.invader_shooting()
+            
+        game.player.movement(game.SCREEN_WIDTH, game.player_bullets)
+        game.screen.blit(bg_img, (0, 0))   
+        game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
+        game.invader_movement()  
+        game.update_enemy_bullets()  
+        game.check_if_shot_invader()  
+        game.invader_shooting()
 
 
-    for bullet in game.player_bullets[:]:
-        bullet.update()
-        pygame.draw.rect(game.screen, (255,255,0), bullet.rect)
-        if bullet.y < 0:
-            game.player_bullets.remove(bullet)
-    
+        for bullet in game.player_bullets[:]:
+            bullet.update()
+            pygame.draw.rect(game.screen, (255,255,0), bullet.rect)
+            if bullet.y < 0:
+                game.player_bullets.remove(bullet)
+        
 
-    for bullet in game.enemy_bullets:
-        if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
-            game.enemy_bullets.remove(bullet)
-            game.player.lives -= 1
-            if game.player.lives <= 0:
-                game.end_screen()
+        for bullet in game.enemy_bullets:
+            if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
+                game.enemy_bullets.remove(bullet)
+                game.player.lives -= 1
+                if game.player.lives <= 0:
+                    game.end_screen()
 
-    
-    for inv in game.invaders: #check if invaders reach the player
-        if inv.y + inv.h >= game.player.y:
-            running = False
+        
+        for inv in game.invaders: #check if invaders reach the player
+            if inv.y + inv.h >= game.player.y:
+                running = False
 
-    if len(game.invaders) == 0:  #all invaders defeated
-        game.level += 1
-        game.level_up_screen()
-        game.draw_invaders()
-    
-    game.score_level_display(game.screen)
-    pygame.display.flip()
-    game.clock.tick(game.FPS)
+        if len(game.invaders) == 0:  #all invaders defeated
+            game.level += 1
+            game.level_up_screen()
+            game.draw_invaders()
+        
+        game.score_level_display(game.screen)
+        pygame.display.flip()
+        game.clock.tick(game.FPS)
+
+except Exception as e:
+    print(f"An error occurred: {e}")
