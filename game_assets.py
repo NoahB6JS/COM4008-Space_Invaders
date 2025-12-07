@@ -110,17 +110,17 @@ class Invader(Actor):
         self.bullet_speed = bullet_speed
         self.fire_rate = fire_rate
 
-    def move(self):
+    def move(self): #move the invader by its direction x the speed
         self.x += self.speed * self.direction
         self.update()
 
     def chance_of_shot(self):
-        if random.random() < self.fire_rate:
-            return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
+        if random.random() < self.fire_rate: # shooting mechanism by fire rate
+            return Bullet(self.x + self.l//2 , self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
     
     def take_damage(self):
-        self.health -= 1
+        self.health -= 1 # decrease health by 1
         return self.health <= 0
     
     def draw(self, screen):
@@ -129,7 +129,7 @@ class Invader(Actor):
 
     def invader_shooting(self):
         for inv in self.invaders:
-            bullet = inv.chance_of_shot()
+            bullet = inv.chance_of_shot() # check if invader has been hit by bullet
             if bullet:
                 self.enemy_bullets.append(bullet)
                 shoot_sound.play()
