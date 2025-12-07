@@ -43,7 +43,7 @@ class Game:
 
     def level_up_screen(self):
         font = pygame.font.Font(None, 48)
-        text = font.render(f"Level {self.level}", True, (255, 255, 255))
+        text = font.render(f"Level {self.level} Complete!", True, (255, 255, 255))
         score_text = font.render(f"score: {self.score}", True, (255, 255, 255))
         start_text = font.render("Press SPACE to start level", True, (255, 255, 255))
         running = True
@@ -170,12 +170,13 @@ class Game:
         for bullet in self.player_bullets:  
             for inv in self.invaders: 
                 if bullet.rect.colliderect(pygame.Rect(inv.x, inv.y, inv.l, inv.h)):
-                    inv.health -= 1
+                    
                 
-                    if inv.health <= 0:
+                    if inv.take_damage(): #only if invader health is 0
                         self.score += inv.point_value
                         self.invaders.remove(inv) #adding point value for invader when hit and removing the invade
-                        for inv in self.invaders:
+                        
+                        for inv in self.invaders:#increase invader speed
                             inv.speed += 0.05
 
         

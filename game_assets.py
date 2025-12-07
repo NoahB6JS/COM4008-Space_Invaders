@@ -119,8 +119,22 @@ class Invader(Actor):
             return Bullet(self.x + self.l//2, self.y + self.h, 4, 10, self.bullet_speed, "enemy")
         return None
     
+    def take_damage(self):
+        self.health -= 1
+        return self.health <= 0
+    
     def draw(self, screen):
         screen.blit(self.img, (self.x, self.y))
+
+
+    def invader_shooting(self):
+        for inv in self.invaders:
+            bullet = inv.chance_of_shot()
+            if bullet:
+                self.enemy_bullets.append(bullet)
+                shoot_sound.play()
+
+    
 class Bullet:
     def __init__(self, x, y, w, h, speed, owner):
         self.x = x
