@@ -46,6 +46,7 @@ class Game:
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     running = False
+                    
             self.screen.blit(bg_img, (0, 0))
             self.screen.blit(text, (200, 150))
             self.screen.blit(score_text, (180, 250))
@@ -55,6 +56,7 @@ class Game:
             running = False
 
     def end_screen(self):
+        
         font = pygame.font.Font(None, 48)
         text = font.render("Game Over", True, (255, 0, 0))
         score_text = font.render(f"Final Score: {self.score}", True, (255, 255, 255))
@@ -70,6 +72,7 @@ class Game:
             pygame.display.flip()
 
     def draw_invaders(self):
+        
         self.invaders.clear()
         config = self.get_level_config()
         rows = config["rows"]
@@ -116,6 +119,7 @@ class Game:
             
     # --- Game helpers ---
     def score_level_display(self, screen):
+        
         #blitting all the score, level and lives text onto the screen
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
@@ -126,18 +130,19 @@ class Game:
 
 
     def invader_movement(self):
+        
         hit_wall = False #while invader hasnt hit the wall
         
         for inv in self.invaders:
-            inv.move()#move method called from invader class
+            inv.move()
             self.screen.blit(inv.img, (inv.x, inv.y))
-            next_x = inv.x + inv.speed * inv.direction # next x position
+            next_x = inv.x + inv.speed * inv.direction # this is the next x position
             if next_x <= 0 or next_x + inv.l >= self.SCREEN_WIDTH: # checks if invaders are on either end of screen side
                 hit_wall = True
         if hit_wall:
             for inv in self.invaders:
                 inv.direction *= -1 # multiplies the direction by -1 to reverse direction
-                inv.y += 10 #10px down if wall is hit
+                inv.y += 10 # 10px down if wall is hit
 
     def update_enemy_bullets(self):
         for bullet in self.enemy_bullets[:]:
@@ -163,7 +168,7 @@ class Game:
             for inv in self.invaders: 
                 if bullet.rect.colliderect(pygame.Rect(inv.x, inv.y, inv.l, inv.h)):
                     
-                    if inv.take_damage(): #only if invader health is 0
+                    if inv.take_damage(): # only if invader health is 0
                         self.score += inv.point_value
                         invader_killed.play()
                         self.invaders.remove(inv) #adding point value for invader when hit and removing the invade
@@ -172,7 +177,7 @@ class Game:
                             inv.speed += 0.05
 
         
-                # Remove bullet after hitting **any** invader
+                
                     if bullet in self.player_bullets:
                         self.player_bullets.remove(bullet)
                 
@@ -202,7 +207,8 @@ game.player = Defender(
     h=player_height,
     cooldown=20)
 
-#main game loop
+
+#. main game loop
 try:
     running = True
     while running:
@@ -211,50 +217,53 @@ try:
                 running = False
                 pygame.quit()
                 sys.exit() 
-                
-                
 
-            
+    
         game.player.movement(game.SCREEN_WIDTH, game.player_bullets)
+        
+       
         game.screen.blit(bg_img, (0, 0))   
         game.screen.blit(game.player.img, (game.player.x, game.player.y)) 
+
+       
         game.invader_movement()  
+
+       
         game.update_enemy_bullets()  
-        game.check_if_shot_invader()  
+        game.update_bullets()
         
-        hit_wall = False
-        for inv in game.invaders:
-            if inv.update(game.screen, game.SCREEN_WIDTH):
-                hit_wall = True
+       
+        game.check_if_shot_invader()  
+
+        
         for inv in game.invaders:
             bullet = inv.shoot()
             if bullet:
                 game.enemy_bullets.append(bullet)
-            
-        
+                invader_shoot_sound.play()
 
-
-        
-        
-
-        for bullet in game.enemy_bullets:
+       
+        for bullet in game.enemy_bullets[:]:  # copy the list to avoid modification issues
             if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
                 game.enemy_bullets.remove(bullet)
                 game.player.lives -= 1
                 player_loose_life.play()
                 if game.player.lives <= 0:
                     game.end_screen()
+                    running = False
 
         
-        for inv in game.invaders: #check if invaders reach the player
+        for inv in game.invaders:
             if inv.y + inv.h >= game.player.y:
                 running = False
 
-        if len(game.invaders) == 0:  #all invaders defeated
+       
+        if len(game.invaders) == 0:
             game.level += 1
             game.level_up_screen()
             game.draw_invaders()
-        
+
+    
         game.score_level_display(game.screen)
         pygame.display.flip()
         game.clock.tick(game.FPS)

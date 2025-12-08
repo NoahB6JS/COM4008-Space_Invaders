@@ -137,6 +137,9 @@ class Invader(Actor):
             if bullet:
                 self.enemy_bullets.append(bullet)
                 invader_shoot_sound.play()
+                
+    def shoot(self):
+        return self.chance_of_shot()
 
     
 class Bullet:
