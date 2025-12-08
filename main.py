@@ -15,15 +15,7 @@ class Game:
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
 
 #-----------------------The in game screens---------------------------------------
-
-    def invader_shooting(self):
-        for inv in self.invaders:
-            bullet = inv.chance_of_shot()
-            if bullet:
-                self.enemy_bullets.append(bullet)
-                shoot_sound.play()
-
-
+    
     def start_screen(self):
         font = pygame.font.Font(None, 48)
         text = font.render("Space Invaders", True, (255, 255, 255))
@@ -171,9 +163,9 @@ class Game:
             for inv in self.invaders: 
                 if bullet.rect.colliderect(pygame.Rect(inv.x, inv.y, inv.l, inv.h)):
                     
-                
                     if inv.take_damage(): #only if invader health is 0
                         self.score += inv.point_value
+                        invader_killed.play()
                         self.invaders.remove(inv) #adding point value for invader when hit and removing the invade
                         
                         for inv in self.invaders:#increase invader speed
@@ -185,6 +177,13 @@ class Game:
                         self.player_bullets.remove(bullet)
                 
                         break             
+                    
+    def update_bullets(self):
+        for bullet in game.player_bullets[:]:
+            bullet.update()
+            pygame.draw.rect(game.screen, (255,255,0), bullet.rect)
+            if bullet.y < 0:
+                game.player_bullets.remove(bullet)
             
 #---------------------------The game loop---------------------------
 
@@ -212,6 +211,8 @@ try:
                 running = False
                 pygame.quit()
                 sys.exit() 
+                
+                
 
             
         game.player.movement(game.SCREEN_WIDTH, game.player_bullets)
@@ -220,20 +221,27 @@ try:
         game.invader_movement()  
         game.update_enemy_bullets()  
         game.check_if_shot_invader()  
-        game.invader_shooting()
+        
+        hit_wall = False
+        for inv in game.invaders:
+            if inv.update(game.screen, game.SCREEN_WIDTH):
+                hit_wall = True
+        for inv in game.invaders:
+            bullet = inv.shoot()
+            if bullet:
+                game.enemy_bullets.append(bullet)
+            
+        
 
 
-        for bullet in game.player_bullets[:]:
-            bullet.update()
-            pygame.draw.rect(game.screen, (255,255,0), bullet.rect)
-            if bullet.y < 0:
-                game.player_bullets.remove(bullet)
+        
         
 
         for bullet in game.enemy_bullets:
             if bullet.rect.colliderect(pygame.Rect(game.player.x, game.player.y, game.player.l, game.player.h)): 
                 game.enemy_bullets.remove(bullet)
                 game.player.lives -= 1
+                player_loose_life.play()
                 if game.player.lives <= 0:
                     game.end_screen()
 

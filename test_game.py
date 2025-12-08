@@ -17,6 +17,7 @@ class TestGame:
         assert invader.health == 0
 
     def test_player_takes_damage(self):
+        #Tests player taking damage system by removing a players life and then checking if health is equivelant returning True or False
         player = Defender(0, 0, invader_img, 40, 40, cooldown=20)
         player.lives = 3  
         player.lives -= 1  

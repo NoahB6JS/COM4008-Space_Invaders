@@ -10,7 +10,7 @@ pygame.mixer.init()
 #Media checker
 check_files = ["Media/player.png", "Media/invader.png", "Media/alien.png",
                "Media/squid.png", "Media/ufo.png", "Media/bg.png",
-                "Media/sound/soundtrack.wav","Media/sound/laser.wav"]
+                "Media/sound/soundtrack.wav","Media/sound/laser.wav","Media/sound/explosion.wav","Media/sound/invaderkilled.wav","Media/sound/shoot.wav"]
 
 #EXCEPTION HANDLING FOR THE MEDIA FILE BEFORE GAME STARTS.
 
@@ -21,7 +21,7 @@ for file in check_files:
         else:
             file = pygame.mixer.Sound(file)
     except Exception as e:
-        print(f"ERROR LOADING MEDIA: {file}: {e}") #error message if file not found
+        print(f"ERROR LOADING data: {file}: {e}") #error message if file not found
         pygame.quite()
         sys.exit()
  
@@ -34,7 +34,10 @@ squid_img = pygame.image.load("Media/squid.png")
 ufo_img = pygame.image.load("Media/ufo.png")
 bg_img = pygame.image.load("Media/bg.png")
 soundtrack_sound = pygame.mixer.Sound("Media/sound/soundtrack.wav")
-shoot_sound = pygame.mixer.Sound("Media/sound/laser.wav")
+invader_shoot_sound = pygame.mixer.Sound("Media/sound/laser.wav")
+player_shoot_sound = pygame.mixer.Sound("Media/sound/shoot.wav")
+player_loose_life =  pygame.mixer.Sound("Media/sound/explosion.wav")
+invader_killed = pygame.mixer.Sound("Media/sound/invaderkilled.wav")
 
 try: #Tries to tune background sound
     pygame.mixer.music.load("Media/sound/soundtrack.wav")
@@ -88,6 +91,7 @@ class Defender(Actor):
             self.x += self.speed
 
         if keys[pygame.K_SPACE] and self.cooldown_counter == 0:
+            player_shoot_sound.play()
             bullet_list.append(
                 Bullet(
                 self.x + self.l // 2 - 2,
@@ -132,7 +136,7 @@ class Invader(Actor):
             bullet = inv.chance_of_shot() # check if invader has been hit by bullet
             if bullet:
                 self.enemy_bullets.append(bullet)
-                shoot_sound.play()
+                invader_shoot_sound.play()
 
     
 class Bullet:
