@@ -1,0 +1,48 @@
+Python Creations Explanations (For Presentation) 
+
+
+A three-stage barrier system was implemented, allowing each barrier to visually transition from healthy → cracked → shattered as it takes damage. The stage value increments with every hit and determines which sprite is displayed.
+
+Code Example:
+
+self.images = [
+    barrier_full_img,
+    barrier_cracked_img,
+    barrier_shattered_img
+]
+
+def take_damage(self):
+    self.stage += 1
+    if self.stage >= 3:
+        return True
+
+
+
+Player and enemy bullets were updated to interact with barriers before reaching the player or invaders. When a bullet collides with a barrier, the bullet is removed and the barrier progresses to the next damage stage.
+
+Code Example:
+
+for barrier in self.barriers[:]:
+    if bullet.rect.colliderect(barrier.rect):
+        self.player_bullets.remove(bullet)
+        if barrier.take_damage():
+            self.barriers.remove(barrier)
+        break
+
+
+
+A dedicated Barrier class was created to manage barrier appearance, position, hitbox, and damage progression. It stores all three stage images and updates the active sprite automatically when damage is taken.
+
+Code Example:
+
+class Barrier:
+    def __init__(self, x, y):
+        self.stage = 0
+        self.images = [
+            barrier_full_img,
+            barrier_cracked_img,
+            barrier_shattered_img
+        ]
+
+    def draw(self, screen):
+        screen.blit(self.images[self.stage], (self.x, self.y))
