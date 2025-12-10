@@ -5,10 +5,10 @@ import time
 
 class Game:
     def __init__(self):
-
+# all game attributes 
         self.level = 1
         self.score = 0
-        self.invaders = []
+        self.invaders = [] # main invader lists
         self.enemy_bullets = []
         self.player_bullets = []
         self.font = pygame.font.Font(None, 32)
@@ -18,6 +18,16 @@ class Game:
         self.SCREEN_WIDTH = 500
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])
         self.high_score = self.load_high_score()
+        self.player_width = 40
+        self.player_height = 40
+        # instantiating defender object in game class
+        self.player = Defender( 
+        x=self.SCREEN_WIDTH // 2 - self.player_width // 2,
+        y=self.SCREEN_HEIGHT - self.player_height - 20,
+        img=player_img,
+        l=self.player_width,
+        h=self.player_height,
+        cooldown=20 - self.level //5)
 
 #-----------------------The in game screens---------------------------------------
     
@@ -31,7 +41,7 @@ class Game:
         running = True
         while running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:#runs loop until key pressed
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
@@ -49,7 +59,7 @@ class Game:
         score_text = font.render(f"score: {self.score}", True, (255, 255, 255))
         start_text = font.render("Press SPACE to start level", True, (255, 255, 255))
         running = True
-        while running:
+        while running:#runs loop until key pressed
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -176,7 +186,7 @@ class Game:
         #blitting all the score, level and lives text onto the screen
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         level_text = self.font.render(f"Level: {self.level}", True, (255, 255, 255))
-        lives_text = self.font.render(f"Lives: {game.player.lives}", True, (255, 255, 255))
+        lives_text = self.font.render(f"Lives: {self.player.lives}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
         screen.blit(level_text, (self.SCREEN_WIDTH - level_text.get_width() - 10, 10))
         screen.blit(lives_text, (self.SCREEN_WIDTH//2 - lives_text.get_width()//2, 10))
@@ -208,7 +218,7 @@ class Game:
 
         level = self.level 
         config = {}
-        config["speed"] = 0.5 + (level * 0.00005)
+        config["speed"] = 0.5 + (level * 0.00005) #speed increase
         config["enemy_fire_rate"] = 0.001 + (level * 0.0003)   
         config["rows"] = min(5 + level // 2, 10)
         return config
@@ -239,18 +249,18 @@ class Game:
                     
     def update_bullets(self):
 
-        for bullet in game.player_bullets[:]:
+        for bullet in self.player_bullets[:]:
             bullet.update()
-            pygame.draw.rect(game.screen, (255,255,0), bullet.rect)
+            pygame.draw.rect(self.screen, (255,255,0), bullet.rect)
             if bullet.y < 0:
-                game.player_bullets.remove(bullet)
+                self.player_bullets.remove(bullet)
 
     def load_next_level(self):# loading next level with all invaders destroyed
 
-        if len(game.invaders) == 0:
-            game.level += 1
-            game.level_up_screen()
-            game.draw_invaders()
+        if len(self.invaders) == 0:
+            self.level += 1
+            self.level_up_screen()
+            self.draw_invaders()
 
     def check_invaders_reach_player(self):
 
@@ -261,16 +271,16 @@ class Game:
         return False
     
     def invader_shooting_update(self): #invader shooting check
-        for inv in game.invaders:
+        for inv in self.invaders:
             bullet = inv.shoot()
             if bullet:
                 #bullet is added to enemy bullet list and shot sound plays
-                game.enemy_bullets.append(bullet) 
+                self.enemy_bullets.append(bullet) 
                 invader_shoot_sound.play()
 
     def check_player_hit_by_bullet(self):
 
-        for bullet in game.enemy_bullets:  
+        for bullet in self.enemy_bullets:  
             if bullet.rect.colliderect(pygame.Rect(self.player.x, self.player.y, self.player.l, self.player.h)): 
                 self.enemy_bullets.remove(bullet)
                 self.player.lives -= 1
@@ -278,7 +288,9 @@ class Game:
 
                 if self.player.lives <= 0:
                     self.end_screen()
-                    running = False
+                    return True
+        
+        return False
 
 #---------------------------the game loop-----------------------
 
@@ -286,17 +298,7 @@ game = Game() #create game instance
 game.start_screen()
 game.draw_invaders()
 
-player_width = 40
-player_height = 40
-count = 20
-
-game.player = Defender( #Create player object
-    x=game.SCREEN_WIDTH // 2 - player_width // 2,
-    y=game.SCREEN_HEIGHT - player_height - 20,
-    img=player_img,
-    l=player_width,
-    h=player_height,
-    cooldown=count - game.level //5) # decrease cooldown as level increases - making shooting faster and levels easier to pass
+ # decrease cooldown as level increases - making shooting faster and levels easier to pass
 
 try:
     running = True
@@ -332,5 +334,5 @@ try:
         
 #---------------------------end of main game loop------------------------
 
-except Exception as e:
+except Exception as e: #error if problem with game code
     print(f"An error occurred: {e}")
